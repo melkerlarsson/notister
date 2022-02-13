@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "739028523935",
+    "project_id": "notister-17a05",
+    "storage_bucket": "notister-17a05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739028523935:android:49c0635b05accf826dbbaa",
+        "android_client_info": {
+          "package_name": "com.melkerlarsson.notister"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "739028523935-m8ej5midcnqkjqq07ccetf9oh5q2v4a3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melkerlarsson.notister",
+            "certificate_hash": "de3b61f6ee0f881250749410ac1be7cc196c8dd1"
+          }
+        },
+        {
+          "client_id": "739028523935-e6tigl3vkkud22g74qtd3e90s0jevcgk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRdACfQpjIrtAXK53EszchNFVNn1epLF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "739028523935-e6tigl3vkkud22g74qtd3e90s0jevcgk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
