@@ -14,7 +14,7 @@ const Folder = ({color, style, name, onPress, onLongPress}: FolderProps) => {
 
   return (
     <TouchableOpacity style={[style, styles.container]} onPress={onPress} onLongPress={onLongPress} activeOpacity={0.6} >
-      <Ionicons name="folder" size={100} color={color} />
+      <Ionicons name="folder" size={120} color={color} />
       <Text>{name}</Text>
     </TouchableOpacity>
   );
