@@ -16,17 +16,21 @@ type Folder = {
   sharedWith: SharedUser[] | null
 }
 
-type Note = {
-  id: string
-  imageUrl: string,
-  userId: string,
-  sharedWith: SharedUser[] | null
-}
-
 type SubFolder = {
   color: string,
   name: string, 
   id: string,
+  sharedWith: SharedUser[] | null
+}
+
+type NewFolder = {
+  name: string,
+}
+
+type Note = {
+  id: string
+  imageUrl: string,
+  userId: string,
   sharedWith: SharedUser[] | null
 }
 

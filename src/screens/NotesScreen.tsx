@@ -1,5 +1,5 @@
-import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { doc, getDoc, getDocFromCache } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,8 +13,9 @@ import { NotesTabScreenProps } from "../navigation/HomeStack";
 import { NotesScreenNavigationProps } from "../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
 
-import Modal from "react-native-modal";
 import { FloatingAction, IActionProps } from "react-native-floating-action";
+import SettingsModal from "../components/SettingsModal";
+import NewFolderModal from "../components/NewFolderModal";
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
 
@@ -26,7 +27,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
   const [folders, setFolders] = useState<SubFolder[] | undefined | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
+  const [isNewFolderModalVisible, setIsNewFolderModalVisible] = useState<boolean>(false);
+
   const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
 
   const fetchItems = async () => {
@@ -47,7 +50,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
         );
         setFolders(folderDoc.data()?.subFolders);
         setLoading(false);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error)
+      }
     }
   };
 
@@ -65,8 +70,12 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   const onFolderLongPress = (folder: SubFolder) => {
     setSelectedFolder(folder);
-    setIsModalVisible(true);
+    setIsSettingsModalVisible(true);
   };
+
+  const addNewFolder = (folder: NewFolder) => {
+    console.log(folder.name)
+  }
 
   const actions: IActionProps[] = [
     {
@@ -83,37 +92,18 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   return (
     <View style={{ ...styles.container, width: width }}>
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setIsModalVisible(false)}
-        animationIn="zoomIn"
-        animationOut="zoomOut"
-        backdropOpacity={0.2}
-        backdropTransitionOutTiming={0}
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View
-          style={{
-            display: "flex",
-            padding: 20,
-            backgroundColor: "#fff",
-            width: width * 0.8,
-            height: width * 0.5,
-            borderRadius: 20,
-          }}
-        >
-          <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-            {selectedFolder?.name}
-          </Text>
-        </View>
-      </Modal>
+      { selectedFolder && <SettingsModal isVisible={isSettingsModalVisible} folder={selectedFolder} onClose={() => setIsSettingsModalVisible(false)} /> }
+
+      <NewFolderModal isVisible={isNewFolderModalVisible}  onClose={() => setIsNewFolderModalVisible(false)} onAdd={addNewFolder} />
+
       <FloatingAction
         actions={actions}
         overlayColor="rgba(226, 226, 226, 0.8)"
+        onPressItem={(name) => {
+          if (name === "Folder") {
+            setIsNewFolderModalVisible(true);
+          }
+        }}
       />
       {loading && (
         <ActivityIndicator

@@ -1,22 +1,38 @@
-import { View, StyleSheet, Text, ViewStyle, TextStyle } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { View, StyleSheet, Text, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
 
 interface ButtonProps {
   title: string;
   style?: ViewStyle;
   textStyle?: TextStyle;
   onPress: () => void;
+  reversed?: boolean;
 }
 
-const Button = ({ title, style, textStyle, onPress }: ButtonProps) => {
+const Button = ({ title, style, textStyle, onPress, reversed }: ButtonProps) => {
+
+  const reversedButtonStyles = () => {
+    if (!reversed) return {};
+
+    return {
+      backgroundColor: "#fff",
+    };
+  }
+
+  const reversedTextSyle = () => {
+    if (!reversed) return {};
+
+    return {
+      color: "#269dff",
+    };
+  };
+
   return (
     <TouchableOpacity
       onPress={onPress}
-    
-      style={[styles.button, style]}
+      style={[styles.button, style, reversedButtonStyles()]}
       activeOpacity={0.8}
     >
-      <Text style={[styles.text, textStyle]}>{title}</Text>
+      <Text style={[styles.text, textStyle, reversedTextSyle()]}>{title}</Text>
     </TouchableOpacity>
   );
 };
