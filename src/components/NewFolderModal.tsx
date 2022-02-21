@@ -39,6 +39,7 @@ const NewFolderModal = ({ isVisible, onClose, onAdd }: NewFolderModalProps) => {
     <Modal
       isVisible={isVisible}
       onBackdropPress={close}
+      onBackButtonPress={close}
       animationIn="zoomIn"
       animationOut="zoomOut"
       backdropOpacity={0.2}

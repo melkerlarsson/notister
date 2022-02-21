@@ -20,6 +20,7 @@ const SettingsModal = ({ isVisible, folder, onClose }: SettingsModalProps) => {
       onBackdropPress={onClose}
       animationIn="zoomIn"
       animationOut="zoomOut"
+      onBackButtonPress={onClose}
       backdropOpacity={0.2}
       backdropTransitionOutTiming={0}
       style={{
