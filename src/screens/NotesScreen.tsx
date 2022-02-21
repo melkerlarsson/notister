@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocFromCache } from "firebase/firestore";
+import { doc, getDoc, addDoc, setDoc, DocumentSnapshot, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -16,19 +16,26 @@ import { Ionicons } from "@expo/vector-icons";
 import { FloatingAction, IActionProps } from "react-native-floating-action";
 import SettingsModal from "../components/SettingsModal";
 import NewFolderModal from "../components/NewFolderModal";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/rootReducer";
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
 
 const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
+  const user = useSelector((state: RootState) => state.userReducer.user);
+
   const IS_ROOT_FOLDER = !route.params?.folderId;
 
   const { height, width } = useWindowDimensions();
 
-  const [folders, setFolders] = useState<SubFolder[] | undefined | null>(null);
+  const [currentFolderData, setCurrentFolderData] = useState<RootFolder | Folder | undefined | null>(null);
+  const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<RootFolder | Folder> | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
-  const [isNewFolderModalVisible, setIsNewFolderModalVisible] = useState<boolean>(false);
+  const [isSettingsModalVisible, setIsSettingsModalVisible] =
+    useState<boolean>(false);
+  const [isNewFolderModalVisible, setIsNewFolderModalVisible] =
+    useState<boolean>(false);
 
   const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
 
@@ -36,9 +43,10 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
     if (IS_ROOT_FOLDER) {
       try {
         const rootFolderDoc = await getDoc(
-          doc(collections.rootFolders, auth.currentUser?.uid)
+          doc(collections.rootFolders, user?.uid)
         );
-        setFolders(rootFolderDoc.data()?.subFolders);
+        setCurrentFolderData(rootFolderDoc.data());
+        setCurrentFolderRef(rootFolderDoc.ref);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -48,10 +56,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
         const folderDoc = await getDoc(
           doc(collections.folders, route.params.folderId)
         );
-        setFolders(folderDoc.data()?.subFolders);
+        setCurrentFolderData(folderDoc.data());
+        setCurrentFolderRef(folderDoc.ref);
         setLoading(false);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
   };
@@ -73,9 +82,40 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
     setIsSettingsModalVisible(true);
   };
 
-  const addNewFolder = (folder: NewFolder) => {
-    console.log(folder.name)
-  }
+  const addNewFolder = async (folder: NewFolder) => {
+    if (!user) {
+      console.log("User not signed in");
+    } else {
+      try {
+        const id = (Math.random() * 1000000).toString();
+        const folderRef = doc(collections.folders, id);
+        const subFolder: SubFolder = {
+          ...folder,
+          color: "rgba(0,0,0,.72)",
+          id: folderRef.id,
+          sharedWith: [],
+        };
+        const newFolder: Folder = {
+          ...folder,
+          ...subFolder,
+          userId: user.uid,
+          subFolders: [],
+          notes: [],
+        };
+        // TODO: Add subfolder to the current folder
+        if (currentFolderRef && currentFolderData) {
+          await updateDoc(currentFolderRef, {...currentFolderData, subFolders: [ ...currentFolderData.subFolders, subFolder ]})
+          await setDoc(folderRef, newFolder);
+
+          setCurrentFolderData({ ...currentFolderData, subFolders: [ ...currentFolderData.subFolders, subFolder ]})
+        }
+        
+
+      } catch (error) {
+        console.log("Error adding new folder", error)
+      }
+    }
+  };
 
   const actions: IActionProps[] = [
     {
@@ -92,9 +132,19 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   return (
     <View style={{ ...styles.container, width: width }}>
-      { selectedFolder && <SettingsModal isVisible={isSettingsModalVisible} folder={selectedFolder} onClose={() => setIsSettingsModalVisible(false)} /> }
+      {selectedFolder && (
+        <SettingsModal
+          isVisible={isSettingsModalVisible}
+          folder={selectedFolder}
+          onClose={() => setIsSettingsModalVisible(false)}
+        />
+      )}
 
-      <NewFolderModal isVisible={isNewFolderModalVisible}  onClose={() => setIsNewFolderModalVisible(false)} onAdd={addNewFolder} />
+      <NewFolderModal
+        isVisible={isNewFolderModalVisible}
+        onClose={() => setIsNewFolderModalVisible(false)}
+        onAdd={addNewFolder}
+      />
 
       <FloatingAction
         actions={actions}
@@ -112,8 +162,8 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
           color="#979797"
         />
       )}
-      {folders &&
-        folders.map((folder, index) => (
+      {currentFolderData &&
+        currentFolderData.subFolders?.map((folder, index) => (
           <Folder
             style={{ ...styles.folder, width: width / 2, height: width / 2 }}
             key={index}

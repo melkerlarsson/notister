@@ -1,8 +1,8 @@
 type RootFolder = {
   id: string, 
   name: string,
-  subFolders: SubFolder[] | null
-  notes: Note[] | null
+  subFolders: SubFolder[]
+  notes: Note[]
   userId: string,
 }
 
@@ -10,17 +10,17 @@ type Folder = {
   id: string, 
   name: string,
   color: string,
-  subFolders: SubFolder[] | null
-  notes: Note[] | null
+  subFolders: SubFolder[]
+  notes: Note[]
   userId: string,
-  sharedWith: SharedUser[] | null
+  sharedWith: SharedUser[]
 }
 
 type SubFolder = {
   color: string,
   name: string, 
   id: string,
-  sharedWith: SharedUser[] | null
+  sharedWith: SharedUser[]
 }
 
 type NewFolder = {
@@ -31,7 +31,7 @@ type Note = {
   id: string
   imageUrl: string,
   userId: string,
-  sharedWith: SharedUser[] | null
+  sharedWith: SharedUser[]
 }
 
 type SharedUser = {
