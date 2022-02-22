@@ -1,14 +1,15 @@
 import { View, StyleSheet, Text, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
 
 interface ButtonProps {
-  title: string;
+  title?: string;
   style?: ViewStyle;
   textStyle?: TextStyle;
   onPress: () => void;
   reversed?: boolean;
+  children?: string | React.ReactElement;
 }
 
-const Button = ({ title, style, textStyle, onPress, reversed }: ButtonProps) => {
+const Button = ({ title, style, textStyle, onPress, reversed, children }: ButtonProps) => {
 
   const reversedButtonStyles = () => {
     if (!reversed) return {};
@@ -31,8 +32,12 @@ const Button = ({ title, style, textStyle, onPress, reversed }: ButtonProps) => 
       onPress={onPress}
       style={[styles.button, style, reversedButtonStyles()]}
       activeOpacity={0.8}
-    >
-      <Text style={[styles.text, textStyle, reversedTextSyle()]}>{title}</Text>
+    > 
+      {
+        children ? 
+          (typeof children === "string" ? <Text style={[styles.text, textStyle, reversedTextSyle()]}>{children}</Text> : children)
+          : (<Text style={[styles.text, textStyle, reversedTextSyle()]}>{title}</Text> )
+      }
     </TouchableOpacity>
   );
 };

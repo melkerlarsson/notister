@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, useWindowDimensions, ActivityIndicator } from 'react-native';
 import Modal from "react-native-modal";
 
 import Button from './Button';
@@ -22,10 +22,13 @@ const SettingsModal = ({ isVisible, folder, onClose, onDeleteFolder }: SettingsM
 
   const deleteFolder = async () => {
     setIsLoading(true);
+    console.log("Before delete")
     await onDeleteFolder(folder.id);
-    setIsLoading(false);
+    console.log("After delete")
     onClose();
   }
+
+  useEffect(()=> console.log(isLoading), [isLoading])
 
   return (
     <Modal
@@ -53,7 +56,9 @@ const SettingsModal = ({ isVisible, folder, onClose, onDeleteFolder }: SettingsM
         }}
       >
         <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 20 }}>{folder.name}</Text>
-        <Button title={isLoading ? "Loading..." : "Delete"} onPress={deleteFolder} style={{ backgroundColor: "#ff3434", shadowColor: "#ff3434", width: 100 }}/>
+        <Button onPress={deleteFolder} style={{ backgroundColor: "#ff3434", shadowColor: "#ff3434", width: 100 }} >
+          { isLoading ? <ActivityIndicator color="#fff" size="small" /> : "Delete"}
+        </Button>
       </View>
     </Modal>
   );
