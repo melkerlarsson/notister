@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import Modal from "react-native-modal";
+
+import Button from './Button';
 
 
 
@@ -7,12 +10,22 @@ interface SettingsModalProps {
   isVisible: boolean;
   folder: SubFolder;
   onClose: () => void;
+  onDeleteFolder: (folderId: string) => Promise<void>
 
 }
 
-const SettingsModal = ({ isVisible, folder, onClose }: SettingsModalProps) => {
+const SettingsModal = ({ isVisible, folder, onClose, onDeleteFolder }: SettingsModalProps) => {
 
   const { height, width } = useWindowDimensions();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const deleteFolder = async () => {
+    setIsLoading(true);
+    await onDeleteFolder(folder.id);
+    setIsLoading(false);
+    onClose();
+  }
 
   return (
     <Modal
@@ -35,11 +48,12 @@ const SettingsModal = ({ isVisible, folder, onClose }: SettingsModalProps) => {
           padding: 20,
           backgroundColor: "#fff",
           width: width * 0.8,
-          height: width * 0.5,
+          //height: width * 0.5,
           borderRadius: 20,
         }}
       >
-        <Text style={{ fontWeight: "bold", fontSize: 18 }}>{folder.name}</Text>
+        <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 20 }}>{folder.name}</Text>
+        <Button title={isLoading ? "Loading..." : "Delete"} onPress={deleteFolder} style={{ backgroundColor: "#ff3434", shadowColor: "#ff3434", width: 100 }}/>
       </View>
     </Modal>
   );

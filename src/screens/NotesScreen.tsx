@@ -1,4 +1,4 @@
-import { doc, getDoc, addDoc, setDoc, DocumentSnapshot, updateDoc, DocumentReference } from "firebase/firestore";
+import { doc, getDoc, addDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -18,6 +18,8 @@ import SettingsModal from "../components/SettingsModal";
 import NewFolderModal from "../components/NewFolderModal";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/rootReducer";
+
+import { v4 as createUuid } from 'uuid';
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
 
@@ -87,7 +89,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
       console.log("User not signed in");
     } else {
       try {
-        const id = (Math.random() * 1000000).toString();
+        const id = createUuid();
         const folderRef = doc(collections.folders, id);
         const subFolder: SubFolder = {
           ...folder,
@@ -102,20 +104,60 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
           subFolders: [],
           notes: [],
         };
-        // TODO: Add subfolder to the current folder
         if (currentFolderRef && currentFolderData) {
           await updateDoc(currentFolderRef, {...currentFolderData, subFolders: [ ...currentFolderData.subFolders, subFolder ]})
           await setDoc(folderRef, newFolder);
 
           setCurrentFolderData({ ...currentFolderData, subFolders: [ ...currentFolderData.subFolders, subFolder ]})
         }
-        
 
       } catch (error) {
         console.log("Error adding new folder", error)
       }
     }
   };
+
+  const deleteFolder = async (folderId: string): Promise<void> => {
+    try {
+      if (currentFolderRef && currentFolderData) {
+        await updateDoc(currentFolderRef, { ...currentFolderData, subFolders: [ ...currentFolderData.subFolders.filter(subFolder => subFolder.id !== folderId) ]})
+        await deleteFolderRecursively(folderId);
+
+        setCurrentFolderData({ ...currentFolderData, subFolders: [ ...currentFolderData.subFolders.filter(subFolder => subFolder.id !== folderId) ]});
+
+        return;
+      }
+    } catch (error) {
+      console.log("Error deleting folder", error);
+
+      return;
+    }
+  }
+
+  const deleteFolderRecursively = async (folderId: string) => {
+    try {
+      const folderRef = doc(collections.folders, folderId);
+      const folderData = (await getDoc(folderRef)).data();
+
+      console.log(folderData?.name)
+
+      folderData?.notes.forEach(note => {
+        // TODO: remove note
+      });
+
+      folderData?.subFolders.forEach(async (folder) => {
+        await deleteFolderRecursively(folder.id);
+      });
+
+      await deleteDoc(folderRef);
+
+      return;
+
+
+    } catch (error) {
+      throw error;
+    }
+  }
 
   const actions: IActionProps[] = [
     {
@@ -137,6 +179,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
           isVisible={isSettingsModalVisible}
           folder={selectedFolder}
           onClose={() => setIsSettingsModalVisible(false)}
+          onDeleteFolder={folderId => deleteFolder(folderId)}
         />
       )}
 
