@@ -23,11 +23,19 @@ const HomeStack = () => {
     route: RouteProp<TabParamBase, keyof TabParamBase>
   ): BottomTabNavigationOptions => {
     return {
+      tabBarShowLabel: true,
       tabBarStyle: { 
-        height: 80, 
+        height: 70, 
         justifyContent: "center",
         alignItems: "center",
         paddingBottom: 10,
+        // position: 'absolute',
+        // bottom: 15, 
+        // left: 20,
+        // right: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 15,
+        
       },
       tabBarIcon: ({ focused, color, size }) => {
         let iconname: keyof typeof Ionicons.glyphMap;

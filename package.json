@@ -9,6 +9,8 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4.1.5",
+    "@gorhom/portal": "^1.0.12",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/native": "^6.0.7",
@@ -28,6 +30,7 @@
     "react-native-floating-action": "^1.22.0",
     "react-native-gesture-handler": "~2.1.0",
     "react-native-modal": "^12.1.0",
+    "react-native-reanimated": "~2.3.1",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
     "react-native-web": "0.17.1",

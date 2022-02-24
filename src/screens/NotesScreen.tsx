@@ -1,5 +1,5 @@
 import { doc, getDoc, addDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/rootReducer";
 
 import { v4 as createUuid } from 'uuid';
+import BottomSheet from "@gorhom/bottom-sheet";
+import SettingsBottomSheet from "../components/SettingsBottomSheet";
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
 
@@ -34,10 +36,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
   const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<RootFolder | Folder> | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [isSettingsModalVisible, setIsSettingsModalVisible] =
+  const [isSettingsBottomSheetVisible, setIsSettingsBottomSheetVisible] =
     useState<boolean>(false);
   const [isNewFolderModalVisible, setIsNewFolderModalVisible] =
     useState<boolean>(false);
+  
 
   const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
 
@@ -81,7 +84,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   const onFolderLongPress = (folder: SubFolder) => {
     setSelectedFolder(folder);
-    setIsSettingsModalVisible(true);
+    setIsSettingsBottomSheetVisible(true);
   };
 
   const addNewFolder = async (folder: NewFolder) => {
@@ -174,14 +177,15 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   return (
     <View style={{ ...styles.container, width: width }}>
-      {selectedFolder && (
+      {/* {selectedFolder && (
         <SettingsModal
           isVisible={isSettingsModalVisible}
           folder={selectedFolder}
           onClose={() => setIsSettingsModalVisible(false)}
           onDeleteFolder={folderId => deleteFolder(folderId)}
         />
-      )}
+      )} */}
+
 
       <NewFolderModal
         isVisible={isNewFolderModalVisible}
@@ -198,6 +202,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
           }
         }}
       />
+
+      { selectedFolder && <SettingsBottomSheet folder={selectedFolder} onDeleteFolder={folderId => deleteFolder(folderId)}
+open={isSettingsBottomSheetVisible} onClose={() => setIsSettingsBottomSheetVisible(false)}/> }
+
+
       {loading && (
         <ActivityIndicator
           style={{ flex: 1, justifyContent: "center" }}
@@ -216,6 +225,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
             onLongPress={() => onFolderLongPress(folder)}
           />
         ))}
+
     </View>
   );
 };
