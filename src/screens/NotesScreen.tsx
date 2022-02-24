@@ -8,19 +8,16 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Folder from "../components/Folder";
-import { auth, collections, db } from "../firebase/config";
-import { NotesTabScreenProps } from "../navigation/HomeStack";
+import { collections } from "../firebase/config";
 import { NotesScreenNavigationProps } from "../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
 
 import { FloatingAction, IActionProps } from "react-native-floating-action";
-import SettingsModal from "../components/SettingsModal";
 import NewFolderModal from "../components/NewFolderModal";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/rootReducer";
 
 import { v4 as createUuid } from 'uuid';
-import BottomSheet from "@gorhom/bottom-sheet";
 import SettingsBottomSheet from "../components/SettingsBottomSheet";
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
