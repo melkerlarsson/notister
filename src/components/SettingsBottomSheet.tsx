@@ -21,6 +21,7 @@ import {
 } from "react-native-gesture-handler";
 import ConfirmationModal from "./ConfirmationModal";
 import MenuOption from "./MenuOption";
+import ColorPickerModal from "./ColorPickerModal";
 
 interface SettingsBottomSheetProps {
   open: boolean;
@@ -38,6 +39,8 @@ const SettingsBottomSheet = ({
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [isConfimationModalVisible, setIsConfimationModalVisible] =
+    useState(false);
+  const [isColorPickerModalVisible, setIsColorPickerModalVisible] =
     useState(false);
 
   useEffect(() => {
@@ -81,6 +84,11 @@ const SettingsBottomSheet = ({
     setIsConfimationModalVisible(true);
   };
 
+  const onColorButtonPressed = () => {
+    bottomSheetRef.current?.close();
+    setIsColorPickerModalVisible(true);
+  }
+
   return (
     <>
       <Portal>
@@ -100,11 +108,13 @@ const SettingsBottomSheet = ({
             <Divider />
 
             <MenuOption text="Share" icon={<Ionicons name="person-add-outline" size={24} />} onPress={() => null}/>
+            <MenuOption text="Color" icon={<Ionicons name="md-color-palette-outline" size={24} />} onPress={onColorButtonPressed}/>
             <MenuOption text="Delete" icon={<Ionicons name="trash-outline" size={24} />} onPress={onDeleteButtonPressed}/>
             
           </View>
         </BottomSheet>
       </Portal>
+      <ColorPickerModal isVisible={isColorPickerModalVisible} onClose={() => setIsColorPickerModalVisible(false)} currentColor={folder.color} onColorSelected={(color) => console.log(color)}/>
       <ConfirmationModal
         title="Delete folder"
         description="Are you sure that you want to delete this folder and all of its content? This action is irreversible"

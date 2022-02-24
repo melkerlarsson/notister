@@ -14,8 +14,8 @@ const MenuOption = ({ text, icon: Icon, onPress }: MenuOptionProps) => {
   return (
 
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      { Icon}
-      <Text>{ text }</Text>
+      { Icon }
+      <Text style={styles.text}>{ text }</Text>
     </TouchableOpacity>
   );
 
@@ -31,10 +31,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   icon: {
-    marginRight: 10,
   },
   text: {
-
+    marginLeft: 10,
   }
 });
 
