@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, ViewStyle, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import FolderIcon from './FolderIcon';
 
 
@@ -13,7 +14,7 @@ interface FolderProps {
 const Folder = ({ color, style, name, onPress, onLongPress}: FolderProps) => {
 
   return (
-    <TouchableOpacity style={[style, styles.container]} onPress={onPress} onLongPress={onLongPress} activeOpacity={0.6} >
+    <TouchableOpacity style={[style, styles.container]} delayLongPress={200} onPress={onPress} onLongPress={onLongPress} activeOpacity={0.6} >
       <FolderIcon size={120} color={color} />
       <Text>{name}</Text>
     </TouchableOpacity>
