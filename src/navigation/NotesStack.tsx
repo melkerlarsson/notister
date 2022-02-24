@@ -15,7 +15,7 @@ export const Stack = createNativeStackNavigator<NotesStackaramList>();
 
 const NotesStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true, }}>
+    <Stack.Navigator screenOptions={{ headerShown: true, contentStyle: { backgroundColor: "#fff"} }}>
       <Stack.Screen name="Notes" component={NotesScreen} />
     </Stack.Navigator>
   );

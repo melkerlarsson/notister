@@ -19,6 +19,7 @@ import { RootState } from "../redux/rootReducer";
 
 import { v4 as createUuid } from 'uuid';
 import SettingsBottomSheet from "../components/SettingsBottomSheet";
+import { Portal, PortalHost } from "@gorhom/portal";
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
 
@@ -174,22 +175,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   return (
     <View style={{ ...styles.container, width: width }}>
-      {/* {selectedFolder && (
-        <SettingsModal
-          isVisible={isSettingsModalVisible}
-          folder={selectedFolder}
-          onClose={() => setIsSettingsModalVisible(false)}
-          onDeleteFolder={folderId => deleteFolder(folderId)}
-        />
-      )} */}
-
-
       <NewFolderModal
         isVisible={isNewFolderModalVisible}
         onClose={() => setIsNewFolderModalVisible(false)}
         onAdd={addNewFolder}
       />
-
       <FloatingAction
         actions={actions}
         overlayColor="rgba(226, 226, 226, 0.8)"
@@ -199,7 +189,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
           }
         }}
       />
-
+     
       { selectedFolder && <SettingsBottomSheet folder={selectedFolder} onDeleteFolder={folderId => deleteFolder(folderId)}
 open={isSettingsBottomSheetVisible} onClose={() => setIsSettingsBottomSheetVisible(false)}/> }
 
