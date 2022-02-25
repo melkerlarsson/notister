@@ -1,5 +1,5 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View , LogBox} from "react-native";
 
 import { PortalProvider } from '@gorhom/portal';
 
@@ -8,6 +8,8 @@ import { Provider } from "react-redux";
 import store from "./src/redux/store";
 
 import Routes from './src/navigation/Routes';
+
+LogBox.ignoreLogs([`Setting a timer for a long period`]);
 
 export default function App() {
 
