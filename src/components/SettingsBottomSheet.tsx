@@ -28,6 +28,7 @@ interface SettingsBottomSheetProps {
   onClose: () => void;
   folder: SubFolder;
   onDeleteFolder: (folderId: string) => Promise<void>;
+  onUpdateFolder: (folderId: string, data: Partial<Folder>) => Promise<void>;
 }
 
 const SettingsBottomSheet = ({
@@ -35,6 +36,7 @@ const SettingsBottomSheet = ({
   onClose,
   folder,
   onDeleteFolder,
+  onUpdateFolder
 }: SettingsBottomSheetProps) => {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -114,7 +116,7 @@ const SettingsBottomSheet = ({
           </View>
         </BottomSheet>
       </Portal>
-      <ColorPickerModal isVisible={isColorPickerModalVisible} onClose={() => setIsColorPickerModalVisible(false)} currentColor={folder.color} onColorSelected={(color) => console.log(color)}/>
+      <ColorPickerModal isVisible={isColorPickerModalVisible} onClose={() => setIsColorPickerModalVisible(false)} currentColor={folder.color} onColorSelected={async (color) => await onUpdateFolder(folder.id, { color: color })}/>
       <ConfirmationModal
         title="Delete folder"
         description="Are you sure that you want to delete this folder and all of its content? This action is irreversible"

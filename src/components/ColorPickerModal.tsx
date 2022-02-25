@@ -12,7 +12,7 @@ import {
 interface ColorPickerModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onColorSelected: (color: string) => void;
+  onColorSelected: (color: string) => Promise<void>;
   currentColor: string;
 }
 
@@ -29,7 +29,7 @@ const ColorPickerModal = ({
 
   useEffect(() => setSelectedColor(currentColor), [currentColor]);
 
-  const onSaveButtonPressed = () => {
+  const onSaveButtonPressed = async () => {
     onColorSelected(selectedColor);
     onClose();
   }

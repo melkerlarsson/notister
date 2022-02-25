@@ -121,7 +121,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
   const deleteFolder = async (folderId: string): Promise<void> => {
     try {
       if (currentFolderRef && currentFolderData) {
-        await updateDoc(currentFolderRef, { ...currentFolderData, subFolders: [ ...currentFolderData.subFolders.filter(subFolder => subFolder.id !== folderId) ]})
+        await updateDoc(currentFolderRef, { subFolders: [ ...currentFolderData.subFolders.filter(subFolder => subFolder.id !== folderId) ]})
         await deleteFolderRecursively(folderId);
 
         setCurrentFolderData({ ...currentFolderData, subFolders: [ ...currentFolderData.subFolders.filter(subFolder => subFolder.id !== folderId) ]});
@@ -160,6 +160,32 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
     }
   }
 
+  const updateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
+    // TODO: Also update the actual folder data (not the subfolder)
+    try {
+      if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
+        const foundSubFolder = currentFolderData.subFolders.find(folder => folder.id === folderId);
+        const remainingSubFolders = currentFolderData.subFolders.filter(folder => folder.id !== folderId)
+
+        if (!foundSubFolder) return;
+
+        const newSubFolder: SubFolder = { ...foundSubFolder, ...data }
+
+        const subFolderRef = doc(collections.folders, folderId);
+
+        updateDoc(subFolderRef, { ...data });
+        await updateDoc(currentFolderRef, { subFolders: [...remainingSubFolders, newSubFolder] });
+
+        setCurrentFolderData({ ...currentFolderData, subFolders: [...remainingSubFolders, newSubFolder] })
+
+
+        return;
+      }
+    } catch (error) {
+      
+    }
+  }
+
   const actions: IActionProps[] = [
     {
       name: "Folder",
@@ -191,7 +217,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
       />
      
       { selectedFolder && <SettingsBottomSheet folder={selectedFolder} onDeleteFolder={folderId => deleteFolder(folderId)}
-open={isSettingsBottomSheetVisible} onClose={() => setIsSettingsBottomSheetVisible(false)}/> }
+open={isSettingsBottomSheetVisible} onClose={() => setIsSettingsBottomSheetVisible(false)} onUpdateFolder={(folderId, data) => updateSubFolder(folderId, data)}/> }
 
 
       {loading && (
