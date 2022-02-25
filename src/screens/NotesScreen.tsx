@@ -161,7 +161,6 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
   }
 
   const updateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
-    // TODO: Also update the actual folder data (not the subfolder)
     try {
       if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
         const foundSubFolder = currentFolderData.subFolders.find(folder => folder.id === folderId);
