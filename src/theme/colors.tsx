@@ -2,6 +2,10 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 
 type FolderColor = { name: string, color: string }
 
+export const COLORS = {
+  primary: "#269dff"
+}
+
 
 
 export const FOLDER_COLORS: FolderColor[] = [
