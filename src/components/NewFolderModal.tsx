@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
-import Modal from "./Modal";
+import Modal, { BaseModalProps } from "./Modal";
 import Button from './Button';
 
 
-interface NewFolderModalProps {
-  isVisible: boolean;
-  onClose: () => void;
+interface NewFolderModalProps extends BaseModalProps {
   onAdd: (folder: NewFolder) => void;
 }
 

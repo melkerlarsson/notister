@@ -11,6 +11,11 @@ import { default as RnModal } from "react-native-modal";
 import { COLORS } from "../theme/colors";
 import Button from "./Button";
 
+export interface BaseModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+}
+
 type Buttons = {
   confirm: {
     text: string;

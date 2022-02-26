@@ -10,17 +10,17 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 interface ColorPickerModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onColorSelected: (color: string) => Promise<void>;
+  onSave: (color: string) => Promise<void>;
   currentColor: string;
 }
 
-const ColorPickerModal = ({ isVisible, onClose, onColorSelected, currentColor }: ColorPickerModalProps) => {
+const ColorPickerModal = ({ isVisible, onClose, onSave, currentColor }: ColorPickerModalProps) => {
   const [selectedColor, setSelectedColor] = useState("");
 
   useEffect(() => setSelectedColor(currentColor), [currentColor]);
 
   const onSaveButtonPressed = async () => {
-    await onColorSelected(selectedColor);
+    await onSave(selectedColor);
     onClose();
   };
 

@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Modal from "./Modal";
+import Modal, { BaseModalProps } from "./Modal";
 
 
-interface ConfirmationModal {
+interface ConfirmationModal extends BaseModalProps {
   title: string;
   description: string;
-  isVisible: boolean;
-  onClose: () => void;
   onConfirm: () => void;
 }
 

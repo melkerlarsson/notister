@@ -22,6 +22,7 @@ import {
 import ConfirmationModal from "./ConfirmationModal";
 import MenuOption from "./MenuOption";
 import ColorPickerModal from "./ColorPickerModal";
+import UpdateNameModal from "./UpdateNameModal";
 
 interface SettingsBottomSheetProps {
   open: boolean;
@@ -44,6 +45,7 @@ const SettingsBottomSheet = ({
     useState(false);
   const [isColorPickerModalVisible, setIsColorPickerModalVisible] =
     useState(false);
+  const [isUpdateNameModalVisible, setIsUpdateNameModalVisible] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -91,6 +93,11 @@ const SettingsBottomSheet = ({
     setIsColorPickerModalVisible(true);
   }
 
+  const onUpdateNameButtonPressed = () => {
+    bottomSheetRef.current?.close();
+    setIsUpdateNameModalVisible(true);
+  }
+
   return (
     <>
       <Portal>
@@ -110,13 +117,15 @@ const SettingsBottomSheet = ({
             <Divider />
 
             <MenuOption text="Share" icon={<Ionicons name="person-add-outline" size={24} />} onPress={() => null}/>
+            <MenuOption text="Update Name" icon={<Ionicons name="pencil-sharp" size={24} />} onPress={onUpdateNameButtonPressed}/>
             <MenuOption text="Color" icon={<Ionicons name="md-color-palette-outline" size={24} />} onPress={onColorButtonPressed}/>
             <MenuOption text="Delete" icon={<Ionicons name="trash-outline" size={24} />} onPress={onDeleteButtonPressed}/>
-            
+
           </View>
         </BottomSheet>
       </Portal>
-      <ColorPickerModal isVisible={isColorPickerModalVisible} onClose={() => setIsColorPickerModalVisible(false)} currentColor={folder.color} onColorSelected={async (color) => await onUpdateFolder(folder.id, { color: color })}/>
+      <ColorPickerModal isVisible={isColorPickerModalVisible} onClose={() => setIsColorPickerModalVisible(false)} currentColor={folder.color} onSave={async (color) => await onUpdateFolder(folder.id, { color: color })}/>
+      <UpdateNameModal isVisible={isUpdateNameModalVisible} onClose={() => setIsUpdateNameModalVisible(false)} currentName={folder.name} onSave={async (name) => await onUpdateFolder(folder.id, { name: name })}/>
       <ConfirmationModal
         title="Delete folder"
         description="Are you sure that you want to delete this folder and all of its content? This action is irreversible"
