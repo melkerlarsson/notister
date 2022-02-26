@@ -1,6 +1,5 @@
 type RootFolder = {
   id: string, 
-  name: string,
   subFolders: SubFolder[]
   notes: Note[]
   userId: string,
