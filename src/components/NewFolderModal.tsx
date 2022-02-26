@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Modal, { BaseModalProps } from "./Modal";
+import TextInput from './TextInput';
 import Button from './Button';
 
 
@@ -11,7 +12,6 @@ interface NewFolderModalProps extends BaseModalProps {
 const NewFolderModal = ({ isVisible, onClose, onAdd }: NewFolderModalProps) => {
 
   const [newFolder, setNewFolder] = useState<NewFolder>({ name: "" });
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const beforeClose = () => {
     setNewFolder({ name: "" });
@@ -36,12 +36,6 @@ const NewFolderModal = ({ isVisible, onClose, onAdd }: NewFolderModalProps) => {
           placeholder="Folder Name"
           textContentType="name"
         />
-
-        {errorMessage ? (
-          <Text style={{ fontWeight: "300", fontSize: 16, marginBottom: 10 }}>
-            {errorMessage}
-          </Text>
-        ) : null}
 
       </View>
     </Modal>
