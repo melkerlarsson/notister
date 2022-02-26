@@ -6,6 +6,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import Folder from "../components/Folder";
 import { collections } from "../firebase/config";
@@ -19,7 +20,8 @@ import { RootState } from "../redux/rootReducer";
 
 import { v4 as createUuid } from 'uuid';
 import SettingsBottomSheet from "../components/SettingsBottomSheet";
-import { Portal, PortalHost } from "@gorhom/portal";
+
+import * as DocumentPicker from 'expo-document-picker';
 
 interface NotesScreenProps extends NotesScreenNavigationProps {}
 
@@ -32,15 +34,15 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
   const [currentFolderData, setCurrentFolderData] = useState<RootFolder | Folder | undefined | null>(null);
   const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<RootFolder | Folder> | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
+
   const [loading, setLoading] = useState<boolean>(true);
 
   const [isSettingsBottomSheetVisible, setIsSettingsBottomSheetVisible] =
     useState<boolean>(false);
   const [isNewFolderModalVisible, setIsNewFolderModalVisible] =
     useState<boolean>(false);
-  
 
-  const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
 
   const fetchItems = async () => {
     if (IS_ROOT_FOLDER) {
@@ -164,24 +166,34 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
     try {
       if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
         const foundSubFolder = currentFolderData.subFolders.find(folder => folder.id === folderId);
-        const remainingSubFolders = currentFolderData.subFolders.filter(folder => folder.id !== folderId)
-
+        
         if (!foundSubFolder) return;
 
-        const newSubFolder: SubFolder = { ...foundSubFolder, ...data }
+        const foundSubFolderIndex = currentFolderData.subFolders.indexOf(foundSubFolder)
+        const subFoldersBefore = currentFolderData.subFolders.slice(0, foundSubFolderIndex)
+        const subFoldersAfter = currentFolderData.subFolders.slice(foundSubFolderIndex + 1, currentFolderData.subFolders.length)
 
+        const newSubFolder: SubFolder = { ...foundSubFolder, ...data }
         const subFolderRef = doc(collections.folders, folderId);
 
+        const updatedSubFolders = [...subFoldersBefore, newSubFolder, ...subFoldersAfter];
+
         updateDoc(subFolderRef, { ...data });
-        await updateDoc(currentFolderRef, { subFolders: [...remainingSubFolders, newSubFolder] });
+        await updateDoc(currentFolderRef, { subFolders: updatedSubFolders});
 
-        setCurrentFolderData({ ...currentFolderData, subFolders: [...remainingSubFolders, newSubFolder] })
-
+        setCurrentFolderData({ ...currentFolderData, subFolders: updatedSubFolders })
 
         return;
       }
     } catch (error) {
-      
+      console.log("Error updating folder", error);
+    }
+  }
+
+  const addNote = async () => {
+    const file: DocumentPicker.DocumentResult = await DocumentPicker.getDocumentAsync({ type: ["image/jpg", "image/jpeg", "image/png", "image/pdf"]});
+  
+    if (file.type === "success") {
     }
   }
 
@@ -211,6 +223,8 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
         onPressItem={(name) => {
           if (name === "Folder") {
             setIsNewFolderModalVisible(true);
+          } else if (name === "Note") {
+            addNote();
           }
         }}
       />
@@ -237,7 +251,7 @@ open={isSettingsBottomSheetVisible} onClose={() => setIsSettingsBottomSheetVisib
             onLongPress={() => onFolderLongPress(folder)}
           />
         ))}
-
+      
     </View>
   );
 };
@@ -257,24 +271,3 @@ const styles = StyleSheet.create({
 });
 
 export default NotesScreen;
-
-// setDoc(doc(db, "rootFolders", "wV8xZhPLvjR6I3kopzuygio5Z2V2"), {
-//   subFolders: [
-//     {
-//       name: "My First Folder",
-//       color: "rgb(123, 209, 72)",
-//     }
-//   ],
-//   notes: null,
-//   userId: "wV8xZhPLvjR6I3kopzuygio5Z2V2",
-// });
-
-// addDoc(collections.rootFolders, {
-//   name: "Folder 2",
-//   color: "rgb(205, 116, 230)",
-//   subFolders: null,
-//   notes: null,
-//   userId: "wV8xZhPLvjR6I3kopzuygio5Z2V2",
-//   sharedWith: null,
-//   id: "some id"
-// });
