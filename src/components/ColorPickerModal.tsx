@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, useWindowDimensions, Text } from "react-native";
-import Modal from "react-native-modal";
+import { View, StyleSheet, Text } from "react-native";
 import { FOLDER_COLORS } from "../theme/colors";
-import Button from "./Button";
+
+import Modal from "./Modal";
+
 import { Ionicons } from "@expo/vector-icons";
-import {
-  GestureHandlerRootView,
-  TouchableOpacity,
-} from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface ColorPickerModalProps {
   isVisible: boolean;
@@ -16,102 +14,39 @@ interface ColorPickerModalProps {
   currentColor: string;
 }
 
-const ColorPickerModal = ({
-  isVisible,
-  onClose,
-  onColorSelected,
-  currentColor,
-}: ColorPickerModalProps) => {
-  const { height, width } = useWindowDimensions();
-  const modalWidth = 0.85 * width;
-
+const ColorPickerModal = ({ isVisible, onClose, onColorSelected, currentColor }: ColorPickerModalProps) => {
   const [selectedColor, setSelectedColor] = useState("");
 
   useEffect(() => setSelectedColor(currentColor), [currentColor]);
 
   const onSaveButtonPressed = async () => {
-    onColorSelected(selectedColor);
+    await onColorSelected(selectedColor);
     onClose();
-  }
+  };
 
   return (
-    <Modal
-      isVisible={isVisible}
-      onBackdropPress={onClose}
-      onBackButtonPress={onClose}
-      animationIn="zoomIn"
-      animationOut="zoomOut"
-      backdropOpacity={0.2}
-      backdropTransitionOutTiming={0}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <Modal 
+      title="Pick a color" 
+      isVisible={isVisible} 
+      onClose={onClose} 
+      onButtonPress={onSaveButtonPressed}
+      buttons={ { confirm: { text: "Save" }, cancel: { text: "Cancel" } } }
     >
-      <GestureHandlerRootView>
-        <View
-          style={{
-            display: "flex",
-            padding: 20,
-            backgroundColor: "#fff",
-            width: modalWidth,
-            // height: width * 0.5,
-            borderRadius: 20,
-          }}
-        >
-          <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 20 }}>
-            Pick a color
-          </Text>
-
-          <View style={styles.container}>
-            {FOLDER_COLORS.map((color) => (
-              <TouchableOpacity
-                key={color.name}
-                activeOpacity={0.6}
-                onPress={() => setSelectedColor(color.color)}
-              >
-                <View style={[styles.color, { backgroundColor: color.color }]}>
-                  {selectedColor === color.color ? (
-                    <Ionicons name="checkmark" color="#fff" size={34} />
-                  ) : null}
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-            }}
+      <View style={styles.container}>
+        {FOLDER_COLORS.map((color) => (
+          <TouchableOpacity
+            key={color.name}
+            activeOpacity={0.6}
+            onPress={() => setSelectedColor(color.color)}
           >
-            <Button
-              title="Cancel"
-              onPress={onClose}
-              style={{
-                width: modalWidth * 0.3,
-                shadowOpacity: 0,
-                elevation: 0,
-                backgroundColor: "#fff",
-              }}
-              textStyle={{ color: "#269dff" }}
-            />
-            <Button
-              title="Save"
-              onPress={onSaveButtonPressed}
-              style={{
-                width: modalWidth * 0.3,
-                shadowOpacity: 0,
-                elevation: 0,
-                backgroundColor: "#fff",
-              }}
-              textStyle={{ color: "#269dff" }}
-            />
-          </View>
-        </View>
-      </GestureHandlerRootView>
+            <View style={[styles.color, { backgroundColor: color.color }]}>
+              {selectedColor === color.color ? (
+                <Ionicons name="checkmark" color="#fff" size={34} />
+              ) : null}
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
     </Modal>
   );
 };
