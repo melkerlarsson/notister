@@ -34,8 +34,8 @@ const HomeStack = () => {
         // left: 20,
         // right: 20,
         backgroundColor: '#ffffff',
-        borderRadius: 15,
-        
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
       },
       tabBarIcon: ({ focused, color, size }) => {
         let iconname: keyof typeof Ionicons.glyphMap;
