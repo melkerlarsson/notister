@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import Modal, { BaseModalProps } from "./Modal";
 import TextInput from "./TextInput";
@@ -12,20 +12,30 @@ const UpdateNameModal = ({
   isVisible,
   onClose,
   onSave,
-  currentName
+  currentName,
 }: UpdateNameModalProps) => {
   const [name, setName] = useState(currentName);
+
+  useEffect(() => setName(currentName), [currentName]);
+
+  const close = () => {
+    onClose();
+    setName(currentName);
+  }
 
   return (
     <Modal
       title="Update folder name"
       isVisible={isVisible}
-      onClose={onClose}
-      buttons={{ cancel: { text: "Cancel" }, confirm: { text: "Save"}}}
+      onClose={close}
+      buttons={{ cancel: { text: "Cancel" }, confirm: { text: "Save" } }}
       onButtonPress={async () => await onSave(name)}
-      validation={{ errorMessage: "Please enter a folder name", validate: () => name ? true : false }}
+      validation={{
+        errorMessage: "Please enter a folder name",
+        validate: () => (name ? true : false),
+      }}
     >
-      <TextInput 
+      <TextInput
         onChangeText={(name) => setName(name)}
         value={name}
         placeholder="Folder name"
