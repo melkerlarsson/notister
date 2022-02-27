@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 interface FolderItemProps {
 }
 
-const FolderItem = ({}: FolderItemProps) => {
+const FolderItem = ({ }: FolderItemProps) => {
 	return <TouchableOpacity style={styles.container}></TouchableOpacity>;
 };
 
