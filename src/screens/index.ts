@@ -3,7 +3,7 @@ import SignInScreen from "./auth/SignInScreen";
 import SignUpScreen from "./auth/SignUpScreen";
 import SplashScreen from "./auth/SplashScreen";
 import SettingsScreen from "./SettingsScreen";
-import NotesScreen from "./NotesScreen/NotesScreen";
+import NotesScreen from "./NotesScreen";
 import StudyScreen from "./StudyScreen";
 
 
