@@ -1,20 +1,11 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from "react-native";
 
-
-interface SplashScreenProps {
-
-}
+interface SplashScreenProps {}
 
 const SplashScreen = ({}: SplashScreenProps) => {
-
-
-  return (
-    <View style={{ display: "flex", flex: 1 }}></View>
-  );
+	return <View style={{ display: "flex", flex: 1 }}></View>;
 };
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
 export default SplashScreen;

@@ -1,21 +1,15 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from "react-native";
 
-
-interface StudyScreenProps {
-
-}
+interface StudyScreenProps {}
 
 const StudyScreen = ({}: StudyScreenProps) => {
-
-  return (
-    <View>
-      <Text>Study Screen</Text>
-    </View>
-  );
+	return (
+		<View>
+			<Text>Study Screen</Text>
+		</View>
+	);
 };
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
 export default StudyScreen;

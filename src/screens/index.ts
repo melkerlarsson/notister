@@ -6,5 +6,4 @@ import SettingsScreen from "./SettingsScreen";
 import NotesScreen from "./NotesScreen";
 import StudyScreen from "./StudyScreen";
 
-
 export { OnboardingScreen, SignInScreen, SignUpScreen, SplashScreen, SettingsScreen, NotesScreen, StudyScreen };

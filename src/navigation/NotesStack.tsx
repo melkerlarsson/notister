@@ -3,23 +3,19 @@ import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navig
 import { NotesScreen } from "../screens";
 
 export type NotesStackaramList = {
-  Notes: { folderId: string, folderName: string } | undefined;
+  Notes: { folderId: string; folderName: string } | undefined;
 };
 
-export type NotesScreenNavigationProps = NativeStackScreenProps<
-  NotesStackaramList,
-  "Notes"
->;
+export type NotesScreenNavigationProps = NativeStackScreenProps<NotesStackaramList, "Notes">;
 
 export const Stack = createNativeStackNavigator<NotesStackaramList>();
 
 const NotesStack = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: true, contentStyle: { backgroundColor: "#fff"} }}>
-      <Stack.Screen name="Notes" component={NotesScreen} />
-    </Stack.Navigator>
-  );
+	return (
+		<Stack.Navigator screenOptions={{ headerShown: true, contentStyle: { backgroundColor: "#fff" } }}>
+			<Stack.Screen name="Notes" component={NotesScreen} />
+		</Stack.Navigator>
+	);
 };
-
 
 export default NotesStack;

@@ -10,57 +10,56 @@ interface ButtonProps {
 }
 
 const Button = ({ title, style, textStyle, onPress, reversed, children }: ButtonProps) => {
+	const reversedButtonStyles = () => {
+		if (!reversed) return {};
 
-  const reversedButtonStyles = () => {
-    if (!reversed) return {};
+		return {
+			backgroundColor: "#fff",
+		};
+	};
 
-    return {
-      backgroundColor: "#fff",
-    };
-  }
+	const reversedTextSyle = () => {
+		if (!reversed) return {};
 
-  const reversedTextSyle = () => {
-    if (!reversed) return {};
+		return {
+			color: "#269dff",
+		};
+	};
 
-    return {
-      color: "#269dff",
-    };
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.button, style, reversedButtonStyles()]}
-      activeOpacity={0.8}
-    > 
-      {
-        children ? 
-          (typeof children === "string" ? <Text style={[styles.text, textStyle, reversedTextSyle()]}>{children}</Text> : children)
-          : (<Text style={[styles.text, textStyle, reversedTextSyle()]}>{title}</Text> )
-      }
-    </TouchableOpacity>
-  );
+	return (
+		<TouchableOpacity onPress={onPress} style={[styles.button, style, reversedButtonStyles()]} activeOpacity={0.8}>
+			{children ? (
+				typeof children === "string" ? (
+					<Text style={[styles.text, textStyle, reversedTextSyle()]}>{children}</Text>
+				) : (
+					children
+				)
+			) : (
+				<Text style={[styles.text, textStyle, reversedTextSyle()]}>{title}</Text>
+			)}
+		</TouchableOpacity>
+	);
 };
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#269dff",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    width: 200,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 25,
-    shadowColor: "#269dff",
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 20,
-  },
-  text: {
-    color: "#fff",
-  },
+	button: {
+		backgroundColor: "#269dff",
+		paddingHorizontal: 20,
+		paddingVertical: 10,
+		width: 200,
+		height: 50,
+		justifyContent: "center",
+		alignItems: "center",
+		borderRadius: 25,
+		shadowColor: "#269dff",
+		shadowOffset: { width: 2, height: 4 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		elevation: 20,
+	},
+	text: {
+		color: "#fff",
+	},
 });
 
 export default Button;
