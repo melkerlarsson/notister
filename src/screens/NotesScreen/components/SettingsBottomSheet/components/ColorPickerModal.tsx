@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { FOLDER_COLORS } from "../theme/colors";
+import { FOLDER_COLORS } from "../../../../../theme/colors";
 
-import Modal from "./Modal";
+import Modal from "../../../../../components/Modal";
 
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";

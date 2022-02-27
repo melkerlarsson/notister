@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Modal, { BaseModalProps } from "./Modal";
-import TextInput from './TextInput';
-import Button from './Button';
-
+import Modal, { BaseModalProps } from "../../../components/Modal";
+import TextInput from '../../../components/TextInput';
 
 interface NewFolderModalProps extends BaseModalProps {
   onAdd: (folder: NewFolder) => void;

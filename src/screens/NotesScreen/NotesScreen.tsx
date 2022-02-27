@@ -18,18 +18,18 @@ import {
   RefreshControl,
   ScrollView
 } from "react-native";
-import Folder from "../components/Folder";
-import { collections } from "../firebase/config";
-import { NotesScreenNavigationProps } from "../navigation/NotesStack";
+import Folder from "../../components/Folder";
+import { collections } from "../../firebase/config";
+import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
 
 import { FloatingAction, IActionProps } from "react-native-floating-action";
-import NewFolderModal from "../components/NewFolderModal";
+import NewFolderModal from "./components/NewFolderModal";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/rootReducer";
+import { RootState } from "../../redux/rootReducer";
 
 import { v4 as createUuid } from "uuid";
-import SettingsBottomSheet from "../components/SettingsBottomSheet";
+import SettingsBottomSheet from "./components/SettingsBottomSheet/SettingsBottomSheet";
 
 import {  } from "react-native-gesture-handler";
 

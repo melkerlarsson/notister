@@ -11,18 +11,18 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Divider from "./Divider";
-import FolderIcon from "./FolderIcon";
+import Divider from "../../../../components/Divider";
+import FolderIcon from "../../../../components/FolderIcon";
 
 import { Ionicons } from "@expo/vector-icons";
 import {
   TouchableOpacity,
   TouchableHighlight,
 } from "react-native-gesture-handler";
-import ConfirmationModal from "./ConfirmationModal";
-import MenuOption from "./MenuOption";
-import ColorPickerModal from "./ColorPickerModal";
-import UpdateNameModal from "./UpdateNameModal";
+import ConfirmationModal from "../../../../components/ConfirmationModal";
+import MenuOption from "../../../../components/MenuOption";
+import ColorPickerModal from "./components/ColorPickerModal";
+import UpdateNameModal from "./components/UpdateNameModal";
 
 interface SettingsBottomSheetProps {
   open: boolean;

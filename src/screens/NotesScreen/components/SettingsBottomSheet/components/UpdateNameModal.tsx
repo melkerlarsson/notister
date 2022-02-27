@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import Modal, { BaseModalProps } from "./Modal";
-import TextInput from "./TextInput";
+import Modal, { BaseModalProps } from "../../../../../components/Modal";
+import TextInput from "../../../../../components/TextInput";
 
 interface UpdateNameModalProps extends BaseModalProps {
   onSave: (name: string) => Promise<void>;
