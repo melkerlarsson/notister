@@ -1,20 +1,6 @@
-import {
-	doc,
-	getDoc,
-	addDoc,
-	setDoc,
-	deleteDoc,
-	updateDoc,
-	DocumentReference,
-} from "firebase/firestore";
+import { doc, getDoc, addDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import {
-	View,
-	StyleSheet,
-	useWindowDimensions,
-	RefreshControl,
-	ScrollView,
-} from "react-native";
+import { View, StyleSheet, useWindowDimensions, RefreshControl, ScrollView } from "react-native";
 import Folder from "../../components/Folder";
 import { collections } from "../../firebase/config";
 import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
@@ -37,30 +23,22 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 	const IS_ROOT_FOLDER = !route.params?.folderId;
 
-	const { width, height } = useWindowDimensions();
+	const { width } = useWindowDimensions();
 
-	const [currentFolderData, setCurrentFolderData] = useState<
-    RootFolder | Folder | undefined | null
-  >(null);
-	const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<
-    RootFolder | Folder
-  > | null>(null);
+	const [currentFolderData, setCurrentFolderData] = useState<RootFolder | Folder | undefined | null>(null);
+	const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<RootFolder | Folder> | null>(null);
 	const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
 
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const [isSettingsBottomSheetVisible, setIsSettingsBottomSheetVisible] =
-    useState<boolean>(false);
-	const [isNewFolderModalVisible, setIsNewFolderModalVisible] =
-    useState<boolean>(false);
+	const [isSettingsBottomSheetVisible, setIsSettingsBottomSheetVisible] = useState<boolean>(false);
+	const [isNewFolderModalVisible, setIsNewFolderModalVisible] = useState<boolean>(false);
 
-	const fetchItems = async () => {
+	const fetchItems = async (): Promise<void> => {
 		setLoading(true);
 		if (IS_ROOT_FOLDER) {
 			try {
-				const rootFolderDoc = await getDoc(
-					doc(collections.rootFolders, user?.uid)
-				);
+				const rootFolderDoc = await getDoc(doc(collections.rootFolders, user?.uid));
 				setCurrentFolderData(rootFolderDoc.data());
 				setCurrentFolderRef(rootFolderDoc.ref);
 				setLoading(false);
@@ -69,9 +47,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			}
 		} else {
 			try {
-				const folderDoc = await getDoc(
-					doc(collections.folders, route.params.folderId)
-				);
+				const folderDoc = await getDoc(doc(collections.folders, route.params.folderId));
 				setCurrentFolderData(folderDoc.data());
 				setCurrentFolderRef(folderDoc.ref);
 				setLoading(false);
@@ -87,10 +63,10 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			title: IS_ROOT_FOLDER ? "Your notes" : route.params.folderName,
 		});
 
-		fetchItems();
+		void fetchItems();
 	}, [route.params]);
 
-	const onFolderPress = async (folderId: string, folderName: string) => {
+	const onFolderPress = (folderId: string, folderName: string) => {
 		navigation.push("Notes", { folderId: folderId, folderName: folderName });
 	};
 
@@ -141,21 +117,13 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		try {
 			if (currentFolderRef && currentFolderData) {
 				await updateDoc(currentFolderRef, {
-					subFolders: [
-						...currentFolderData.subFolders.filter(
-							(subFolder) => subFolder.id !== folderId
-						),
-					],
+					subFolders: [...currentFolderData.subFolders.filter((subFolder) => subFolder.id !== folderId)],
 				});
 				await deleteFolderRecursively(folderId);
 
 				setCurrentFolderData({
 					...currentFolderData,
-					subFolders: [
-						...currentFolderData.subFolders.filter(
-							(subFolder) => subFolder.id !== folderId
-						),
-					],
+					subFolders: [...currentFolderData.subFolders.filter((subFolder) => subFolder.id !== folderId)],
 				});
 
 				return;
@@ -168,66 +136,41 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const deleteFolderRecursively = async (folderId: string) => {
-		try {
-			const folderRef = doc(collections.folders, folderId);
-			const folderData = (await getDoc(folderRef)).data();
+		const folderRef = doc(collections.folders, folderId);
+		const folderData = (await getDoc(folderRef)).data();
 
-			console.log(folderData?.name);
-
-			folderData?.notes.forEach((note) => {
+		if (folderData) {
+			for (const note of folderData.notes) {
 				// TODO: remove note
-			});
+			}
 
-			folderData?.subFolders.forEach(async (folder) => {
+			for (const folder of folderData.subFolders) {
 				await deleteFolderRecursively(folder.id);
-			});
-
-			await deleteDoc(folderRef);
-
-			return;
-		} catch (error) {
-			throw error;
+			}
 		}
+
+		await deleteDoc(folderRef);
+
+		return;
 	};
 
-	const updateSubFolder = async (
-		folderId: string,
-		data: Partial<SubFolder>
-	) => {
+	const updateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
 		try {
-			if (
-				currentFolderRef &&
-        currentFolderData &&
-        currentFolderData.subFolders
-			) {
-				const foundSubFolder = currentFolderData.subFolders.find(
-					(folder) => folder.id === folderId
-				);
+			if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
+				const foundSubFolder = currentFolderData.subFolders.find((folder) => folder.id === folderId);
 
 				if (!foundSubFolder) return;
 
-				const foundSubFolderIndex =
-          currentFolderData.subFolders.indexOf(foundSubFolder);
-				const subFoldersBefore = currentFolderData.subFolders.slice(
-					0,
-					foundSubFolderIndex
-				);
-				const subFoldersAfter = currentFolderData.subFolders.slice(
-					foundSubFolderIndex + 1,
-					currentFolderData.subFolders.length
-				);
+				const foundSubFolderIndex = currentFolderData.subFolders.indexOf(foundSubFolder);
+				const subFoldersBefore = currentFolderData.subFolders.slice(0, foundSubFolderIndex);
+				const subFoldersAfter = currentFolderData.subFolders.slice(foundSubFolderIndex + 1, currentFolderData.subFolders.length);
 
 				const newSubFolder: SubFolder = { ...foundSubFolder, ...data };
 				const subFolderRef = doc(collections.folders, folderId);
 
-				const updatedSubFolders = [
-					...subFoldersBefore,
-					newSubFolder,
-					...subFoldersAfter,
-				];
+				const updatedSubFolders = [...subFoldersBefore, newSubFolder, ...subFoldersAfter];
 
-				updateDoc(subFolderRef, { ...data });
-				await updateDoc(currentFolderRef, { subFolders: updatedSubFolders });
+				await Promise.all([updateDoc(subFolderRef, { ...data }), updateDoc(currentFolderRef, { subFolders: updatedSubFolders })]);
 
 				setCurrentFolderData({
 					...currentFolderData,
@@ -242,12 +185,12 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const addNote = async () => {
-		const file: DocumentPicker.DocumentResult =
-      await DocumentPicker.getDocumentAsync({
-      	type: ["image/jpg", "image/jpeg", "image/png", "image/pdf"],
-      });
+		const file: DocumentPicker.DocumentResult = await DocumentPicker.getDocumentAsync({
+			type: ["image/jpg", "image/jpeg", "image/png", "image/pdf"],
+		});
 
 		if (file.type === "success") {
+			// TODO:
 		}
 	};
 
@@ -266,21 +209,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 	return (
 		<View style={{ flex: 1 }}>
-			<ScrollView
-				refreshControl={
-					<RefreshControl
-						enabled={true}
-						onRefresh={fetchItems}
-						refreshing={loading}
-					/>
-				}
-			>
+			<ScrollView refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}>
 				<View style={{ ...styles.container }}>
-					<NewFolderModal
-						isVisible={isNewFolderModalVisible}
-						onClose={() => setIsNewFolderModalVisible(false)}
-						onAdd={addNewFolder}
-					/>
+					<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={addNewFolder} />
 
 					{selectedFolder && (
 						<SettingsBottomSheet
@@ -288,9 +219,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 							onDeleteFolder={(folderId) => deleteFolder(folderId)}
 							open={isSettingsBottomSheetVisible}
 							onClose={() => setIsSettingsBottomSheetVisible(false)}
-							onUpdateFolder={(folderId, data) =>
-								updateSubFolder(folderId, data)
-							}
+							onUpdateFolder={(folderId, data) => updateSubFolder(folderId, data)}
 						/>
 					)}
 
@@ -303,20 +232,20 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
           )} */}
 
 					{currentFolderData &&
-            currentFolderData.subFolders?.map((folder, index) => (
-            	<Folder
-            		style={{
-            			...styles.folder,
-            			width: width / 2,
-            			height: width / 2,
-            		}}
-            		key={index}
-            		color={folder.color}
-            		name={folder.name}
-            		onPress={() => onFolderPress(folder.id, folder.name)}
-            		onLongPress={() => onFolderLongPress(folder)}
-            	/>
-            ))}
+						currentFolderData.subFolders?.map((folder, index) => (
+							<Folder
+								style={{
+									...styles.folder,
+									width: width / 2,
+									height: width / 2,
+								}}
+								key={index}
+								color={folder.color}
+								name={folder.name}
+								onPress={() => onFolderPress(folder.id, folder.name)}
+								onLongPress={() => onFolderLongPress(folder)}
+							/>
+						))}
 				</View>
 			</ScrollView>
 			<FloatingAction
@@ -326,7 +255,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					if (name === "Folder") {
 						setIsNewFolderModalVisible(true);
 					} else if (name === "Note") {
-						addNote();
+						void addNote();
 					}
 				}}
 			/>
