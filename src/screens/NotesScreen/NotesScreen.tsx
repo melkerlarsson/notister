@@ -140,9 +140,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		const folderData = (await getDoc(folderRef)).data();
 
 		if (folderData) {
-			for (const note of folderData.notes) {
-				// TODO: remove note
-			}
+			// TODO: Loop over notes and delete them.
 
 			for (const folder of folderData.subFolders) {
 				await deleteFolderRecursively(folder.id);

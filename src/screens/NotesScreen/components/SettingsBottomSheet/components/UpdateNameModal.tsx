@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
 import Modal, { BaseModalProps } from "../../../../../components/Modal";
 import TextInput from "../../../../../components/TextInput";
 
