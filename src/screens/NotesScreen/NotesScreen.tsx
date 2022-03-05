@@ -1,4 +1,4 @@
-import { doc, getDoc, addDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, useWindowDimensions, RefreshControl, ScrollView } from "react-native";
 import Folder from "../../components/Folder";
@@ -222,14 +222,6 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 							onUpdateFolder={(folderId, data) => updateSubFolder(folderId, data)}
 						/>
 					)}
-
-					{/* {loading && (
-            <ActivityIndicator
-              style={{ flex: 1, justifyContent: "center" }}
-              size="large"
-              color="#979797"
-            />
-          )} */}
 
 					{currentFolderData &&
 						currentFolderData.subFolders?.map((folder, index) => (

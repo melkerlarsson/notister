@@ -1,4 +1,3 @@
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { NotesScreen } from "../screens";
 

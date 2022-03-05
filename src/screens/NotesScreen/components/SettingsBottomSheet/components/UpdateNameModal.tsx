@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import Modal, { BaseModalProps } from "../../../../../components/Modal";
 import TextInput from "../../../../../components/TextInput";
 
@@ -34,11 +34,5 @@ const UpdateNameModal = ({ isVisible, onClose, onSave, currentName }: UpdateName
 		</Modal>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-});
 
 export default UpdateNameModal;

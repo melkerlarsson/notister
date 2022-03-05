@@ -1,4 +1,3 @@
-import { signOut } from "firebase/auth";
 import { View, Text, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
@@ -13,9 +12,9 @@ const SettingsScreen = ({}: SettingsScreenProps) => {
 	const dispatch: Dispatch<UserAction> = useDispatch();
 	const user = useSelector((state: RootState) => state.userReducer.user);
 
-	const onPress = () => {
+	const onPress = async () => {
 		dispatch(signOutUser());
-		auth.signOut();
+		await auth.signOut();
 	};
 
 	return (
