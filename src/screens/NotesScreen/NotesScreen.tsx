@@ -1,7 +1,7 @@
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, useWindowDimensions, RefreshControl, ScrollView, Image, Text } from "react-native";
-import Folder from "../../components/Folder";
+import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
+import Folder from "./components/Folder";
 import { collections, storage } from "../../firebase/config";
 import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,10 +14,10 @@ import { RootState } from "../../redux/rootReducer";
 import { v4 as createUuid } from "uuid";
 import SettingsBottomSheet from "./components/SettingsBottomSheet/SettingsBottomSheet";
 
-import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { getDownloadURL, ref as storageRef, uploadBytesResumable } from "firebase/storage";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import Note from "./components/Note";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -25,8 +25,6 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const user = useSelector((state: RootState) => state.userReducer.user);
 
 	const IS_ROOT_FOLDER = !route.params?.folderId;
-
-	const { width } = useWindowDimensions();
 
 	const [currentFolderData, setCurrentFolderData] = useState<RootFolder | Folder | undefined | null>(null);
 	const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<RootFolder | Folder> | null>(null);
@@ -243,8 +241,6 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			name: result.name,
 			onUploaded: onUploaded,
 		});
-
-		
 	};
 
 	const actions: IActionProps[] = [
@@ -277,45 +273,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					)}
 
 					{currentFolderData &&
-						currentFolderData.subFolders?.map((folder, index) => (
-							<Folder
-								style={{
-									...styles.folder,
-									width: width / 2,
-									height: width / 2,
-								}}
-								key={index}
-								color={folder.color}
-								name={folder.name}
-								onPress={() => onFolderPress(folder.id, folder.name)}
-								onLongPress={() => onFolderLongPress(folder)}
-							/>
-						))}
+						currentFolderData.subFolders?.map((folder, index) => <Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />)}
 					{currentFolderData &&
-						currentFolderData.notes?.map((note, index) => (
-							<View
-								key={index}
-								style={{
-									width: width / 2,
-									height: width / 2,
-									padding: 40,
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<Image
-									source={{ uri: note.imageUrl }}
-									style={{
-										width: "100%",
-										height: "100%",
-										borderRadius: 15,
-										marginBottom: 10,
-									}}
-								/>
-								<Text>{note.name}</Text>
-							</View>
-						))}
+						currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => null} onLongPress={() => null} />)}
 				</View>
 			</ScrollView>
 			<FloatingAction
@@ -340,9 +300,6 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		flexWrap: "wrap",
 		backgroundColor: "#fff",
-	},
-	folder: {
-		marginVertical: 0,
 	},
 });
 
