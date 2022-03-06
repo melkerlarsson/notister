@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 type RootFolder = {
   id: string;
   subFolders: SubFolder[];
@@ -31,6 +32,7 @@ type Note = {
   imageUrl: string;
   userId: string;
   sharedWith: SharedUser[];
+  name: string;
 };
 
 type SharedUser = {

@@ -1,8 +1,8 @@
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, useWindowDimensions, RefreshControl, ScrollView } from "react-native";
+import { View, StyleSheet, useWindowDimensions, RefreshControl, ScrollView, Image, Text } from "react-native";
 import Folder from "../../components/Folder";
-import { collections } from "../../firebase/config";
+import { collections, storage } from "../../firebase/config";
 import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -14,7 +14,10 @@ import { RootState } from "../../redux/rootReducer";
 import { v4 as createUuid } from "uuid";
 import SettingsBottomSheet from "./components/SettingsBottomSheet/SettingsBottomSheet";
 
+import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
+import { getDownloadURL, ref as storageRef, uploadBytesResumable } from "firebase/storage";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -182,14 +185,66 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		}
 	};
 
+	const convertImageToBlob = async (url: string): Promise<Blob> => {
+		const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
+		const response: AxiosResponse<Blob> = await axios.request(config);
+
+		return response.data;
+	};
+
+	const uploadImage = async ({ url, name, onUploaded }: { url: string; name: string; onUploaded: (remoteUrl: string) => void }): Promise<void> => {
+		const blob = await convertImageToBlob(url);
+
+		const imageRef = storageRef(storage, `notes/${name}`);
+		const uploadTask = uploadBytesResumable(imageRef, blob);
+
+		uploadTask.on(
+			"state_changed",
+			(snapshot) => {
+				const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				console.log(`Upload is ${progress}% done`);
+			},
+			(error) => {
+				// TODO: Show error to the user
+				console.log(error.message);
+			},
+			() => {
+				const getUrl = async () => {
+					const remoteUrl = await getDownloadURL(uploadTask.snapshot.ref);
+					onUploaded(remoteUrl);
+				};
+
+				void getUrl();
+			}
+		);
+	};
+
 	const addNote = async () => {
-		const file: DocumentPicker.DocumentResult = await DocumentPicker.getDocumentAsync({
-			type: ["image/jpg", "image/jpeg", "image/png", "image/pdf"],
+		if (!user || !currentFolderData || !currentFolderRef) return;
+		const result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
+
+		if (result.type === "cancel") return;
+
+		const onUploaded = async (imageUrl: string) => {
+			const note: Note = {
+				id: createUuid(),
+				imageUrl: imageUrl,
+				name: result.name,
+				userId: user.uid,
+				sharedWith: [],
+			};
+
+			setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
+			await updateDoc(currentFolderRef, { notes: [...currentFolderData.notes, note] });
+		};
+
+		await uploadImage({
+			url: result.uri,
+			name: result.name,
+			onUploaded: onUploaded,
 		});
 
-		if (file.type === "success") {
-			// TODO:
-		}
+		
 	};
 
 	const actions: IActionProps[] = [
@@ -235,6 +290,31 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 								onPress={() => onFolderPress(folder.id, folder.name)}
 								onLongPress={() => onFolderLongPress(folder)}
 							/>
+						))}
+					{currentFolderData &&
+						currentFolderData.notes?.map((note, index) => (
+							<View
+								key={index}
+								style={{
+									width: width / 2,
+									height: width / 2,
+									padding: 40,
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
+								<Image
+									source={{ uri: note.imageUrl }}
+									style={{
+										width: "100%",
+										height: "100%",
+										borderRadius: 15,
+										marginBottom: 10,
+									}}
+								/>
+								<Text>{note.name}</Text>
+							</View>
 						))}
 				</View>
 			</ScrollView>
