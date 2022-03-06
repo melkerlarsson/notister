@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "fi
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
 import Folder from "./components/Folder";
-import { collections, storage } from "../../firebase/config";
+import { collections, notesStorageRef } from "../../firebase/config";
 import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -15,7 +15,7 @@ import { v4 as createUuid } from "uuid";
 import SettingsBottomSheet from "./components/SettingsBottomSheet/SettingsBottomSheet";
 
 import * as DocumentPicker from "expo-document-picker";
-import { getDownloadURL, ref as storageRef, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Note from "./components/Note";
 
@@ -131,7 +131,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			}
 		} catch (error) {
 			console.log("Error deleting folder", error);
-
+			alert("Error deleting folder");
 			return;
 		}
 	};
@@ -141,7 +141,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		const folderData = (await getDoc(folderRef)).data();
 
 		if (folderData) {
-			// TODO: Loop over notes and delete them.
+			for (const note of folderData.notes) {
+				// TODO: Remove study data from note
+				const imageRef = notesStorageRef(note.id);
+				await deleteObject(imageRef);
+			}
 
 			for (const folder of folderData.subFolders) {
 				await deleteFolderRecursively(folder.id);
@@ -190,10 +194,10 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		return response.data;
 	};
 
-	const uploadImage = async ({ url, name, onUploaded }: { url: string; name: string; onUploaded: (remoteUrl: string) => void }): Promise<void> => {
+	const uploadImage = async ({ url, id, onUploaded }: { url: string; id: string; onUploaded: (remoteUrl: string) => void }): Promise<void> => {
 		const blob = await convertImageToBlob(url);
 
-		const imageRef = storageRef(storage, `notes/${name}`);
+		const imageRef = notesStorageRef(id);
 		const uploadTask = uploadBytesResumable(imageRef, blob);
 
 		uploadTask.on(
@@ -223,9 +227,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 		if (result.type === "cancel") return;
 
+		const noteId = createUuid();
+
 		const onUploaded = async (imageUrl: string) => {
 			const note: Note = {
-				id: createUuid(),
+				id: noteId,
 				imageUrl: imageUrl,
 				name: result.name,
 				userId: user.uid,
@@ -238,7 +244,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 		await uploadImage({
 			url: result.uri,
-			name: result.name,
+			id: noteId,
 			onUploaded: onUploaded,
 		});
 	};
@@ -274,8 +280,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 					{currentFolderData &&
 						currentFolderData.subFolders?.map((folder, index) => <Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />)}
-					{currentFolderData &&
-						currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => null} onLongPress={() => null} />)}
+					{currentFolderData && currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => null} onLongPress={() => null} />)}
 				</View>
 			</ScrollView>
 			<FloatingAction
