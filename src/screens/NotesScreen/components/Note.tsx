@@ -18,7 +18,9 @@ const styles = StyleSheet.create({
 		width: FOLDER_ITEM_SIZE,
 		height: FOLDER_ITEM_SIZE,
 		borderRadius: 10,
-		marginBottom: 20
+		marginBottom: 20,
+		borderWidth: 1,
+		borderColor: "#d8d8d8"
 	},
 });
 
