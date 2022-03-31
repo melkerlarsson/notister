@@ -18,6 +18,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Note from "./components/Note";
+import FolderSettingsBottomSheet from "./components/SettingsBottomSheet/FolderSettingsBottomSheet";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -280,7 +281,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 					{currentFolderData &&
 						currentFolderData.subFolders?.map((folder, index) => <Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />)}
-					{currentFolderData && currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => null} onLongPress={() => null} />)}
+					{currentFolderData && currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => navigation.navigate("Image", { images: currentFolderData.notes, index: index })} onLongPress={() => null} />)}
 				</View>
 			</ScrollView>
 			<FloatingAction

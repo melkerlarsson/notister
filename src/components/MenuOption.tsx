@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-interface MenuOptionProps {
+export interface MenuOptionProps {
 	text: string;
 	icon: React.ReactElement;
 	onPress: () => void;

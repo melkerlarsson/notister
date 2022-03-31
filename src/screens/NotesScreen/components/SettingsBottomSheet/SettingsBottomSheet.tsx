@@ -1,7 +1,16 @@
 import { View, Text, StyleSheet } from "react-native";
-import BottomSheet, { BottomSheetBackdrop, useBottomSheetSpringConfigs } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+	BottomSheetBackdrop,
+	useBottomSheetSpringConfigs,
+} from "@gorhom/bottom-sheet";
 import { Portal, PortalHost } from "@gorhom/portal";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import Divider from "../../../../components/Divider";
 import FolderIcon from "../../../../components/FolderIcon";
 
@@ -19,12 +28,21 @@ interface SettingsBottomSheetProps {
 	onUpdateFolder: (folderId: string, data: Partial<Folder>) => Promise<void>;
 }
 
-const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFolder }: SettingsBottomSheetProps) => {
+const SettingsBottomSheet = ({
+	open,
+	onClose,
+	folder,
+	onDeleteFolder,
+	onUpdateFolder,
+}: SettingsBottomSheetProps) => {
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
-	const [isConfimationModalVisible, setIsConfimationModalVisible] = useState(false);
-	const [isColorPickerModalVisible, setIsColorPickerModalVisible] = useState(false);
-	const [isUpdateNameModalVisible, setIsUpdateNameModalVisible] = useState(false);
+	const [isConfimationModalVisible, setIsConfimationModalVisible] =
+		useState(false);
+	const [isColorPickerModalVisible, setIsColorPickerModalVisible] =
+		useState(false);
+	const [isUpdateNameModalVisible, setIsUpdateNameModalVisible] =
+		useState(false);
 
 	useEffect(() => {
 		if (open) {
@@ -45,7 +63,17 @@ const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFo
 		stiffness: 400,
 	});
 
-	const renderBackdrop = useCallback((props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.2} />, []);
+	const renderBackdrop = useCallback(
+		(props) => (
+			<BottomSheetBackdrop
+				{...props}
+				disappearsOnIndex={-1}
+				appearsOnIndex={0}
+				opacity={0.2}
+			/>
+		),
+		[]
+	);
 
 	const deleteFolder = async () => {
 		await onDeleteFolder(folder.id);
@@ -70,7 +98,14 @@ const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFo
 	return (
 		<>
 			<Portal>
-				<BottomSheet ref={bottomSheetRef} index={-1} snapPoints={snapPoints} enablePanDownToClose backdropComponent={renderBackdrop} animationConfigs={animationConfigs}>
+				<BottomSheet
+					ref={bottomSheetRef}
+					index={-1}
+					snapPoints={snapPoints}
+					enablePanDownToClose
+					backdropComponent={renderBackdrop}
+					animationConfigs={animationConfigs}
+				>
 					<View style={styles.content}>
 						<View style={styles.heading}>
 							<FolderIcon color={folder.color} size={24} />
@@ -78,15 +113,44 @@ const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFo
 						</View>
 						<Divider />
 
-						<MenuOption disabled text="Share" icon={<Ionicons name="person-add-outline" size={24} />} onPress={() => null} />
-						<MenuOption text="Update Name" icon={<Ionicons name="pencil-sharp" size={24} />} onPress={onUpdateNameButtonPressed} />
-						<MenuOption text="Color" icon={<Ionicons name="md-color-palette-outline" size={24} />} onPress={onColorButtonPressed} />
-						<MenuOption text="Delete" icon={<Ionicons name="trash-outline" size={24} />} onPress={onDeleteButtonPressed} />
+						<MenuOption
+							disabled
+							text="Share"
+							icon={<Ionicons name="person-add-outline" size={24} />}
+							onPress={() => null}
+						/>
+						<MenuOption
+							text="Update Name"
+							icon={<Ionicons name="pencil-sharp" size={24} />}
+							onPress={onUpdateNameButtonPressed}
+						/>
+						<MenuOption
+							text="Color"
+							icon={<Ionicons name="md-color-palette-outline" size={24} />}
+							onPress={onColorButtonPressed}
+						/>
+						<MenuOption
+							text="Delete"
+							icon={<Ionicons name="trash-outline" size={24} />}
+							onPress={onDeleteButtonPressed}
+						/>
 					</View>
 				</BottomSheet>
 			</Portal>
-			<ColorPickerModal isVisible={isColorPickerModalVisible} onClose={() => setIsColorPickerModalVisible(false)} currentColor={folder.color} onSave={async (color) => await onUpdateFolder(folder.id, { color: color })} />
-			<UpdateNameModal isVisible={isUpdateNameModalVisible} onClose={() => setIsUpdateNameModalVisible(false)} currentName={folder.name} onSave={async (name) => await onUpdateFolder(folder.id, { name: name })} />
+			<ColorPickerModal
+				isVisible={isColorPickerModalVisible}
+				onClose={() => setIsColorPickerModalVisible(false)}
+				currentColor={folder.color}
+				onSave={async (color) =>
+					await onUpdateFolder(folder.id, { color: color })
+				}
+			/>
+			<UpdateNameModal
+				isVisible={isUpdateNameModalVisible}
+				onClose={() => setIsUpdateNameModalVisible(false)}
+				currentName={folder.name}
+				onSave={async (name) => await onUpdateFolder(folder.id, { name: name })}
+			/>
 			<ConfirmationModal
 				title="Delete folder"
 				description="Are you sure that you want to delete this folder and all of its content? This action is irreversible"
@@ -112,16 +176,6 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 18,
 		fontWeight: "bold",
-		marginLeft: 10,
-	},
-	action: {
-		display: "flex",
-		flexDirection: "row",
-		alignItems: "center",
-		paddingVertical: 15,
-		paddingHorizontal: 20,
-	},
-	actionText: {
 		marginLeft: 10,
 	},
 });
