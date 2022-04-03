@@ -6,7 +6,7 @@ const useScreenDimensions = (): { height: number; width: number } => {
 	const { width, height } = useWindowDimensions();
 	const headerHeight = useHeaderHeight();
 
-	const screenHeight = height - headerHeight - TAB_BAR_HEIGHT;
+	const screenHeight = height - headerHeight - TAB_BAR_HEIGHT + 45;
 
 	return { width, height: screenHeight };
 };

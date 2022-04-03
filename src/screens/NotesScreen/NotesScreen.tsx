@@ -19,6 +19,7 @@ import { getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/sto
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Note from "./components/Note";
 import FolderSettingsBottomSheet from "./components/SettingsBottomSheet/FolderSettingsBottomSheet";
+import ImageViewer from "./components/ImageViewer/ImageViewer";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -35,6 +36,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 	const [isSettingsBottomSheetVisible, setIsSettingsBottomSheetVisible] = useState<boolean>(false);
 	const [isNewFolderModalVisible, setIsNewFolderModalVisible] = useState<boolean>(false);
+
+	const [isImageModalVisible, setIsImageModalVisible] = useState<boolean>(false);
+	const [imageIndex, setImageIndex] = useState<number>(0);
 
 	const fetchItems = async (): Promise<void> => {
 		setLoading(true);
@@ -263,6 +267,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		},
 	];
 
+	const showImageViewer = (index: number) => {
+		setImageIndex(index);
+		setIsImageModalVisible(true);
+	};
+
 	return (
 		<View style={{ flex: 1 }}>
 			<ScrollView refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}>
@@ -280,8 +289,10 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					)}
 
 					{currentFolderData &&
-						currentFolderData.subFolders?.map((folder, index) => <Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />)}
-					{currentFolderData && currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => navigation.navigate("Image", { images: currentFolderData.notes, index: index })} onLongPress={() => null} />)}
+						currentFolderData.subFolders?.map((folder, index) => (
+							<Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />
+						))}
+					{currentFolderData && currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => null} />) }
 				</View>
 			</ScrollView>
 			<FloatingAction
@@ -295,6 +306,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					}
 				}}
 			/>
+			{ currentFolderData?.notes && <ImageViewer visible={isImageModalVisible} onClose={() => setIsImageModalVisible(false)} images={Array.from(currentFolderData.notes, note => ({ url: note.imageUrl}))} startIndex={imageIndex}/> }
 		</View>
 	);
 };

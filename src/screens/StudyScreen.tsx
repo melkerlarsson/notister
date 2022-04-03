@@ -1,13 +1,12 @@
-import { View, Text } from "react-native";
+import { View, Text, Platform, useWindowDimensions } from "react-native";
+
 
 interface StudyScreenProps {}
 
 const StudyScreen = ({}: StudyScreenProps) => {
-	return (
-		<View>
-			<Text>Study Screen</Text>
-		</View>
-	);
+
+	return <Text>Study Screen</Text>;
+	
 };
 
 export default StudyScreen;

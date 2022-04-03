@@ -5,5 +5,6 @@
   "singleQuote": false,
   "bracketSpacing": true,
   "bracketSameLine": false,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "printWidth": 200
 }

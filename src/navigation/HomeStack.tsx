@@ -37,8 +37,8 @@ const HomeStack = () => {
 				alignItems: "center",
 				paddingBottom: 10,
 				backgroundColor: "#ffffff",
-				borderTopLeftRadius: 15,
-				borderTopRightRadius: 15,
+				// borderTopLeftRadius: 15,
+				// borderTopRightRadius: 15,
 			},
 			tabBarIcon: ({ focused, color, size }) => {
 				let iconname: keyof typeof Ionicons.glyphMap;

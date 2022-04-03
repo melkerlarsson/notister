@@ -1,53 +1,46 @@
-import {
-	View,
-	Text,
-	StyleSheet,
-	Image,
-	ListRenderItemInfo,
-	useWindowDimensions,
-} from "react-native";
-import { ImageViewerNavigationProps } from "../../../../navigation/NotesStack";
+import { useWindowDimensions, View, Text } from "react-native";
+import Modal from "react-native-modal";
+import { StatusBar } from "expo-status-bar";
+import { default as ImageSlider } from "react-native-image-zoom-viewer";
 
-import Carousel from "react-native-reanimated-carousel";
-
-import { FlatList } from "react-native-gesture-handler";
-import { CarouselRenderItemInfo } from "react-native-reanimated-carousel/lib/typescript/types";
-import useScreenDimensions from "../../../../hooks/useScreenDimensions";
-
-const ImageViewer = ({ navigation, route }: ImageViewerNavigationProps) => {
-	const { images, index } = route.params;
-
-	const { width, height } = useScreenDimensions();
-
-	const renderItem = (image: CarouselRenderItemInfo<Note>) => {
-		return (
-			<Image
-				source={{ uri: image.item.imageUrl }}
-				style={{
-					height: height,
-					width: width,
-					resizeMode: "contain",
-					alignSelf: "center",
-				}}
-			/>
-		);
-	};
-
-	return (
-		<Carousel
-			width={width}
-			height={height}
-			style={{}}
-			defaultIndex={index}
-			loop={false}
-			pagingEnabled
-			windowSize={width}
-			data={images}
-			renderItem={(image) => renderItem(image)}
-		/>
-	);
+type ImageData = {
+	url: string;
 };
 
-const styles = StyleSheet.create({});
+type ImageViewerProps = {
+	images: ImageData[];
+	visible: boolean;
+	onClose: () => void;
+	startIndex: number;
+};
+
+const ImageViewer = ({ images, visible, onClose, startIndex }: ImageViewerProps) => {
+	const NUMBER_OF_IMAGES = images.length;
+
+	const { width } = useWindowDimensions();
+
+	return (
+		<>
+			<StatusBar animated={true} backgroundColor={visible ? "#000" : "#fff"} style={visible ? "inverted" : "dark"} translucent={visible} />
+			<Modal style={{ padding: 0, margin: 0 }} useNativeDriver isVisible={visible} animationIn="zoomIn" animationOut="fadeOut" onBackButtonPress={onClose}>
+				<ImageSlider
+					imageUrls={images}
+					onCancel={onClose}
+					onSwipeDown={onClose}
+					index={startIndex}
+					enableSwipeDown
+					renderIndicator={() => <></>}
+					renderFooter={(index) => (
+						<View style={{ width, marginBottom: 40, alignItems: "center" }}>
+							<Text style={{ color: "#fff" }}>
+								{index + 1} / {NUMBER_OF_IMAGES}
+							</Text>
+						</View>
+					)}
+				/>
+			</Modal>
+		</>
+	);
+};
 
 export default ImageViewer;
