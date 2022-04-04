@@ -6,6 +6,8 @@ export const COLORS = {
 	primary: "#269dff",
 };
 
+export const DEFAULT_FOLDER_COLOR = "rgb(95, 99, 104)";
+
 export const FOLDER_COLORS: FolderColor[] = [
 	{ color: "rgb(123, 209, 72)", name: "Green" },
 	{ color: "#1f94e0", name: "Blue" },
