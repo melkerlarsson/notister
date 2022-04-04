@@ -20,6 +20,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Note from "./components/Note";
 import FolderSettingsBottomSheet from "./components/SettingsBottomSheet/FolderSettingsBottomSheet";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
+import { addFolder, deleteFolder } from "../../firebase";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -81,85 +82,30 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		setIsSettingsBottomSheetVisible(true);
 	};
 
-	const addNewFolder = async (folder: NewFolder) => {
-		if (!user) {
-			console.log("User not signed in");
-		} else {
+	const onAddFolder = async (newFolder: NewFolder) => {
+		if (user && currentFolderRef && currentFolderData) {
 			try {
-				const id = createUuid();
-				const folderRef = doc(collections.folders, id);
-				const subFolder: SubFolder = {
-					...folder,
-					color: "rgba(0,0,0,.72)",
-					id: folderRef.id,
-					sharedWith: [],
-				};
-				const newFolder: Folder = {
-					...folder,
-					...subFolder,
-					userId: user.uid,
-					subFolders: [],
-					notes: [],
-				};
-				if (currentFolderRef && currentFolderData) {
-					await updateDoc(currentFolderRef, {
-						...currentFolderData,
-						subFolders: [...currentFolderData.subFolders, subFolder],
-					});
-					await setDoc(folderRef, newFolder);
-
-					setCurrentFolderData({
-						...currentFolderData,
-						subFolders: [...currentFolderData.subFolders, subFolder],
-					});
-				}
+				const subFolder: SubFolder = await addFolder({ newFolder, userId: user.uid, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
+				setCurrentFolderData({ ...currentFolderData, subFolders: [...currentFolderData.subFolders, subFolder] });
 			} catch (error) {
-				console.log("Error adding new folder", error);
+				console.log("Error adding folder");
 			}
 		}
 	};
 
-	const deleteFolder = async (folderId: string): Promise<void> => {
-		try {
-			if (currentFolderRef && currentFolderData) {
-				await updateDoc(currentFolderRef, {
-					subFolders: [...currentFolderData.subFolders.filter((subFolder) => subFolder.id !== folderId)],
-				});
-				await deleteFolderRecursively(folderId);
+	const onDeleteFolder = async (folderId: string): Promise<void> => {
+		if (currentFolderRef && currentFolderData) {
+			try {
+				const newSubFolders: SubFolder[] = await deleteFolder({ folderId, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 
 				setCurrentFolderData({
 					...currentFolderData,
-					subFolders: [...currentFolderData.subFolders.filter((subFolder) => subFolder.id !== folderId)],
+					subFolders: newSubFolders,
 				});
-
-				return;
-			}
-		} catch (error) {
-			console.log("Error deleting folder", error);
-			alert("Error deleting folder");
-			return;
-		}
-	};
-
-	const deleteFolderRecursively = async (folderId: string) => {
-		const folderRef = doc(collections.folders, folderId);
-		const folderData = (await getDoc(folderRef)).data();
-
-		if (folderData) {
-			for (const note of folderData.notes) {
-				// TODO: Remove study data from note
-				const imageRef = notesStorageRef(note.id);
-				await deleteObject(imageRef);
-			}
-
-			for (const folder of folderData.subFolders) {
-				await deleteFolderRecursively(folder.id);
+			} catch (error) {
+				console.log("Error deleting folding");
 			}
 		}
-
-		await deleteDoc(folderRef);
-
-		return;
 	};
 
 	const updateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
@@ -276,12 +222,12 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		<View style={{ flex: 1 }}>
 			<ScrollView refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}>
 				<View style={{ ...styles.container }}>
-					<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={addNewFolder} />
+					<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={onAddFolder} />
 
 					{selectedFolder && (
 						<SettingsBottomSheet
 							folder={selectedFolder}
-							onDeleteFolder={(folderId) => deleteFolder(folderId)}
+							onDeleteFolder={(folderId) => onDeleteFolder(folderId)}
 							open={isSettingsBottomSheetVisible}
 							onClose={() => setIsSettingsBottomSheetVisible(false)}
 							onUpdateFolder={(folderId, data) => updateSubFolder(folderId, data)}
@@ -292,7 +238,8 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 						currentFolderData.subFolders?.map((folder, index) => (
 							<Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />
 						))}
-					{currentFolderData && currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => null} />) }
+					{currentFolderData &&
+						currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => null} />)}
 				</View>
 			</ScrollView>
 			<FloatingAction
@@ -306,7 +253,14 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					}
 				}}
 			/>
-			{ currentFolderData?.notes && <ImageViewer visible={isImageModalVisible} onClose={() => setIsImageModalVisible(false)} images={Array.from(currentFolderData.notes, note => ({ url: note.imageUrl}))} startIndex={imageIndex}/> }
+			{currentFolderData?.notes && (
+				<ImageViewer
+					visible={isImageModalVisible}
+					onClose={() => setIsImageModalVisible(false)}
+					images={Array.from(currentFolderData.notes, (note) => ({ url: note.imageUrl }))}
+					startIndex={imageIndex}
+				/>
+			)}
 		</View>
 	);
 };
