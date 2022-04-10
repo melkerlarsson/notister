@@ -21,6 +21,7 @@ import Note from "./components/Note";
 import FolderSettingsBottomSheet from "./components/SettingsBottomSheet/FolderSettingsBottomSheet";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { addFolder, deleteFolder } from "../../firebase";
+import Toast from "../../components/Toast";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -88,7 +89,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				const subFolder: SubFolder = await addFolder({ newFolder, userId: user.uid, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 				setCurrentFolderData({ ...currentFolderData, subFolders: [...currentFolderData.subFolders, subFolder] });
 			} catch (error) {
-				console.log("Error adding folder");
+				Toast.show({ title: "Error", description: "An error occurred while adding folder. Please try again", type: "error" });
 			}
 		}
 	};
@@ -97,13 +98,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		if (currentFolderRef && currentFolderData) {
 			try {
 				const newSubFolders: SubFolder[] = await deleteFolder({ folderId, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
-
-				setCurrentFolderData({
-					...currentFolderData,
-					subFolders: newSubFolders,
-				});
+				setCurrentFolderData({ ...currentFolderData, subFolders: newSubFolders });
 			} catch (error) {
-				console.log("Error deleting folding");
+				Toast.show({ title: "Error", description: "An error occurred while deleting folder. Please try again", type: "error" });
 			}
 		}
 	};
