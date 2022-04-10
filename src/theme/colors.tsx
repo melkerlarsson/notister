@@ -2,6 +2,9 @@ type FolderColor = { name: string; color: string };
 
 export const COLORS = {
 	primary: "#269dff",
+	error: "rgb(255, 30, 0)",
+	successs: "rgb(0, 209, 42)",
+	info: "rgb(255, 225, 2)",
 };
 
 export const DEFAULT_FOLDER_COLOR = "rgb(95, 99, 104)";
