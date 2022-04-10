@@ -20,7 +20,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Note from "./components/Note";
 import FolderSettingsBottomSheet from "./components/SettingsBottomSheet/FolderSettingsBottomSheet";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
-import { addFolder, deleteFolder } from "../../firebase";
+import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
 
 type NotesScreenProps = NotesScreenNavigationProps;
@@ -86,7 +86,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const onAddFolder = async (newFolder: NewFolder) => {
 		if (user && currentFolderRef && currentFolderData) {
 			try {
-				const subFolder: SubFolder = await addFolder({ newFolder, userId: user.uid, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
+				const subFolder: SubFolder = await folderAPI.addFolder({ newFolder, userId: user.uid, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 				setCurrentFolderData({ ...currentFolderData, subFolders: [...currentFolderData.subFolders, subFolder] });
 			} catch (error) {
 				Toast.show({ title: "Error", description: "An error occurred while adding folder. Please try again", type: "error" });
@@ -97,7 +97,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const onDeleteFolder = async (folderId: string): Promise<void> => {
 		if (currentFolderRef && currentFolderData) {
 			try {
-				const newSubFolders: SubFolder[] = await deleteFolder({ folderId, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
+				const newSubFolders: SubFolder[] = await folderAPI.deleteFolder({ folderId, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 				setCurrentFolderData({ ...currentFolderData, subFolders: newSubFolders });
 			} catch (error) {
 				Toast.show({ title: "Error", description: "An error occurred while deleting folder. Please try again", type: "error" });
@@ -106,95 +106,49 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const updateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
-		try {
-			if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
-				const foundSubFolder = currentFolderData.subFolders.find((folder) => folder.id === folderId);
+		if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
+			const response = await folderAPI.updateSubFolder({ folderId, data, parentFolderRef: currentFolderRef, parentFolderData: currentFolderData });
 
-				if (!foundSubFolder) return;
-
-				const foundSubFolderIndex = currentFolderData.subFolders.indexOf(foundSubFolder);
-				const subFoldersBefore = currentFolderData.subFolders.slice(0, foundSubFolderIndex);
-				const subFoldersAfter = currentFolderData.subFolders.slice(foundSubFolderIndex + 1, currentFolderData.subFolders.length);
-
-				const newSubFolder: SubFolder = { ...foundSubFolder, ...data };
-				const subFolderRef = doc(collections.folders, folderId);
-
-				const updatedSubFolders = [...subFoldersBefore, newSubFolder, ...subFoldersAfter];
-
-				await Promise.all([updateDoc(subFolderRef, { ...data }), updateDoc(currentFolderRef, { subFolders: updatedSubFolders })]);
-
-				setCurrentFolderData({
-					...currentFolderData,
-					subFolders: updatedSubFolders,
-				});
-
-				return;
+			if (response.error) {
+				Toast.show({ title: response.error.title, description: response.error.description, type: "error" });
+			} else {
+				setCurrentFolderData(response.data);
 			}
-		} catch (error) {
-			console.log("Error updating folder", error);
 		}
 	};
 
-	const convertImageToBlob = async (url: string): Promise<Blob> => {
-		const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
-		const response: AxiosResponse<Blob> = await axios.request(config);
+	const onAddNote = async () => {
+		if (!user || !currentFolderData || !currentFolderRef) return;
 
-		return response.data;
-	};
+		try {
+			const result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
 
-	const uploadImage = async ({ url, id, onUploaded }: { url: string; id: string; onUploaded: (remoteUrl: string) => void }): Promise<void> => {
-		const blob = await convertImageToBlob(url);
+			if (result.type === "cancel") return;
 
-		const imageRef = notesStorageRef(id);
-		const uploadTask = uploadBytesResumable(imageRef, blob);
+			const noteId = createUuid();
 
-		uploadTask.on(
-			"state_changed",
-			(snapshot) => {
-				const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-				console.log(`Upload is ${progress}% done`);
-			},
-			(error) => {
-				// TODO: Show error to the user
-				console.log(error.message);
-			},
-			() => {
-				const getUrl = async () => {
-					const remoteUrl = await getDownloadURL(uploadTask.snapshot.ref);
-					onUploaded(remoteUrl);
+			const onUploaded = async (imageUrl: string) => {
+				const note: Note = {
+					id: noteId,
+					imageUrl: imageUrl,
+					name: result.name,
+					userId: user.uid,
+					sharedWith: [],
 				};
 
-				void getUrl();
-			}
-		);
-	};
-
-	const addNote = async () => {
-		if (!user || !currentFolderData || !currentFolderRef) return;
-		const result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
-
-		if (result.type === "cancel") return;
-
-		const noteId = createUuid();
-
-		const onUploaded = async (imageUrl: string) => {
-			const note: Note = {
-				id: noteId,
-				imageUrl: imageUrl,
-				name: result.name,
-				userId: user.uid,
-				sharedWith: [],
+				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
+				await updateDoc(currentFolderRef, { notes: [...currentFolderData.notes, note] });
 			};
 
-			setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
-			await updateDoc(currentFolderRef, { notes: [...currentFolderData.notes, note] });
-		};
-
-		await uploadImage({
-			url: result.uri,
-			id: noteId,
-			onUploaded: onUploaded,
-		});
+			await noteAPI.uploadImage({
+				url: result.uri,
+				id: noteId,
+				onUploaded: onUploaded,
+				onError: () => Toast.show({ title: "Error", description: "Error uploading image. Please try again.", type: "error" }),
+			});
+		} catch (error) {
+			Toast.show({ title: "Error", description: "Error adding note. Please try again.", type: "error" });
+		}
 	};
 
 	const actions: IActionProps[] = [
@@ -246,7 +200,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					if (name === "Folder") {
 						setIsNewFolderModalVisible(true);
 					} else if (name === "Note") {
-						void addNote();
+						void onAddNote();
 					}
 				}}
 			/>
