@@ -1,8 +1,8 @@
-import { doc, getDoc, setDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
+import { doc, getDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
 import Folder from "./components/Folder";
-import { collections, notesStorageRef } from "../../firebase/config";
+import { collections } from "../../firebase/config";
 import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -15,10 +15,7 @@ import { v4 as createUuid } from "uuid";
 import SettingsBottomSheet from "./components/SettingsBottomSheet/SettingsBottomSheet";
 
 import * as DocumentPicker from "expo-document-picker";
-import { getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Note from "./components/Note";
-import FolderSettingsBottomSheet from "./components/SettingsBottomSheet/FolderSettingsBottomSheet";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
@@ -58,11 +55,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				const folderDoc = await getDoc(doc(collections.folders, route.params.folderId));
 				setCurrentFolderData(folderDoc.data());
 				setCurrentFolderRef(folderDoc.ref);
-				setLoading(false);
-			} catch (error) {
-				console.log(error);
-				setLoading(false);
-			}
+				setLoading(false); } catch (error) { console.log(error); setLoading(false); }
 		}
 	};
 
@@ -105,7 +98,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		}
 	};
 
-	const updateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
+	const onUpdateSubFolder = async (folderId: string, data: Partial<SubFolder>) => {
 		if (currentFolderRef && currentFolderData && currentFolderData.subFolders) {
 			const response = await folderAPI.updateSubFolder({ folderId, data, parentFolderRef: currentFolderRef, parentFolderData: currentFolderData });
 
@@ -181,7 +174,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 							onDeleteFolder={(folderId) => onDeleteFolder(folderId)}
 							open={isSettingsBottomSheetVisible}
 							onClose={() => setIsSettingsBottomSheetVisible(false)}
-							onUpdateFolder={(folderId, data) => updateSubFolder(folderId, data)}
+							onUpdateFolder={(folderId, data) => onUpdateSubFolder(folderId, data)}
 						/>
 					)}
 
