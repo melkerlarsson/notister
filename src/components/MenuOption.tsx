@@ -6,14 +6,15 @@ export interface MenuOptionProps {
 	icon: React.ReactElement;
 	onPress: () => void;
 	disabled?: boolean;
+	textColor?: string;
 }
 
-const MenuOption = ({ text, icon: Icon, onPress, disabled }: MenuOptionProps) => {
+const MenuOption = ({ text, icon: Icon, onPress, disabled , textColor }: MenuOptionProps) => {
 	return (
 		<TouchableOpacity disabled={disabled} onPress={onPress}>
 			<View style={[styles.container, { opacity: disabled ? 0.2 : 1 }] }>
 				{Icon}
-				<Text style={styles.text}>{text}</Text>
+				<Text style={[styles.text, { color: textColor}]}>{text}</Text>
 			</View>
 		</TouchableOpacity>
 	);
