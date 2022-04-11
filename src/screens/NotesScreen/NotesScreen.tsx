@@ -19,6 +19,7 @@ import Note from "./components/Note";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
+import Animated, { ZoomIn } from "react-native-reanimated";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -55,7 +56,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				const folderDoc = await getDoc(doc(collections.folders, route.params.folderId));
 				setCurrentFolderData(folderDoc.data());
 				setCurrentFolderRef(folderDoc.ref);
-				setLoading(false); } catch (error) { console.log(error); setLoading(false); }
+				setLoading(false);
+			} catch (error) {
+				console.log(error);
+				setLoading(false);
+			}
 		}
 	};
 
@@ -162,30 +167,26 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		setIsImageModalVisible(true);
 	};
 
+	const FolderItems = () => {
+		if (!currentFolderData) return null;
+
+		return (
+			<>
+				{currentFolderData.subFolders?.map((folder, index) => (
+					<Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />
+				))}
+				{currentFolderData &&
+					currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => null} />)}
+			</>
+		);
+	};
+
 	return (
 		<View style={{ flex: 1 }}>
 			<ScrollView refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}>
-				<View style={{ ...styles.container }}>
-					<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={onAddFolder} />
-
-					{selectedFolder && (
-						<SettingsBottomSheet
-							folder={selectedFolder}
-							onDeleteFolder={(folderId) => onDeleteFolder(folderId)}
-							open={isSettingsBottomSheetVisible}
-							onClose={() => setIsSettingsBottomSheetVisible(false)}
-							onUpdateFolder={(folderId, data) => onUpdateSubFolder(folderId, data)}
-						/>
-					)}
-
-					{currentFolderData &&
-						currentFolderData.subFolders?.map((folder, index) => (
-							<Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />
-						))}
-					{currentFolderData &&
-						currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => null} />)}
-				</View>
+				<View style={{ ...styles.container }}><FolderItems /></View>
 			</ScrollView>
+			<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={onAddFolder} />
 			<FloatingAction
 				actions={actions}
 				overlayColor="rgba(226, 226, 226, 0.8)"
@@ -197,6 +198,15 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					}
 				}}
 			/>
+			{selectedFolder && (
+				<SettingsBottomSheet
+					folder={selectedFolder}
+					onDeleteFolder={(folderId) => onDeleteFolder(folderId)}
+					open={isSettingsBottomSheetVisible}
+					onClose={() => setIsSettingsBottomSheetVisible(false)}
+					onUpdateFolder={(folderId, data) => onUpdateSubFolder(folderId, data)}
+				/>
+			)}
 			{currentFolderData?.notes && (
 				<ImageViewer
 					visible={isImageModalVisible}
@@ -216,6 +226,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		flexWrap: "wrap",
 		backgroundColor: "#fff",
+		marginTop: 40,
 	},
 });
 
