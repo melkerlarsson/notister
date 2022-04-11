@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
-import Button from "../components/Button";
+import MenuOption from "../components/MenuOption";
+import Divider from "../components/Divider";
 import { auth } from "../firebase/config";
 import { RootState } from "../redux/rootReducer";
+import { Ionicons } from "@expo/vector-icons";
 import { signOutUser, UserAction } from "../redux/user/userActions";
 
 interface SettingsScreenProps {}
@@ -19,8 +21,9 @@ const SettingsScreen = ({}: SettingsScreenProps) => {
 
 	return (
 		<View style={styles.container}>
-			<Text>Email: {user?.email}</Text>
-			<Button title="Sign out" onPress={onPress} />
+			<Text style={{ paddingHorizontal: 20, fontSize: 18, marginTop: 10, marginBottom: 10 }}>Signed in as: {user?.email}</Text>
+			<Divider />
+			<MenuOption text="Sign out" icon={<Ionicons name="exit-outline" size={28} />} onPress={onPress} />
 		</View>
 	);
 };
@@ -29,8 +32,7 @@ const styles = StyleSheet.create({
 	container: {
 		display: "flex",
 		flex: 1,
-		paddingHorizontal: 20,
-		paddingVertical: 40,
+		paddingVertical: 10,
 	},
 });
 
