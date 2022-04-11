@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity, TouchableHighlight } from "react-native-gesture-handler";
 
 export interface MenuOptionProps {
 	text: string;
@@ -11,12 +11,12 @@ export interface MenuOptionProps {
 
 const MenuOption = ({ text, icon: Icon, onPress, disabled , textColor }: MenuOptionProps) => {
 	return (
-		<TouchableOpacity disabled={disabled} onPress={onPress}>
+		<TouchableHighlight disabled={disabled} onPress={onPress} underlayColor="#efefef" >
 			<View style={[styles.container, { opacity: disabled ? 0.2 : 1 }] }>
 				{Icon}
 				<Text style={[styles.text, { color: textColor}]}>{text}</Text>
 			</View>
-		</TouchableOpacity>
+		</TouchableHighlight>
 	);
 };
 
