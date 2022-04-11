@@ -22,10 +22,11 @@ type ShowProps = {
 	title: string;
 	description: string;
 	type?: type;
+	duration?: number;
 };
 
-const show = ({ title, description, type = "success" }: ShowProps) => {
-	ToastMessage.show({ text1: title, text2: description, type, position: "bottom", autoHide: false });
+const show = ({ title, description, type = "success", duration = 3000 }: ShowProps) => {
+	ToastMessage.show({ text1: title, text2: description, type, position: "bottom", autoHide: true, visibilityTime: duration });
 };
 
 const hide = () => ToastMessage.hide();

@@ -42,25 +42,21 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 
 	const fetchItems = async (): Promise<void> => {
 		setLoading(true);
-		if (IS_ROOT_FOLDER) {
-			try {
+		try {
+			if (IS_ROOT_FOLDER) {
 				const rootFolderDoc = await getDoc(doc(collections.rootFolders, user?.uid));
 				setCurrentFolderData(rootFolderDoc.data());
 				setCurrentFolderRef(rootFolderDoc.ref);
 				setLoading(false);
-			} catch (error) {
-				console.log(error);
-			}
-		} else {
-			try {
+			} else {
 				const folderDoc = await getDoc(doc(collections.folders, route.params.folderId));
 				setCurrentFolderData(folderDoc.data());
 				setCurrentFolderRef(folderDoc.ref);
 				setLoading(false);
-			} catch (error) {
-				console.log(error);
-				setLoading(false);
 			}
+		} catch (error) {
+			Toast.show({ type: "error", title: "Error", description: "An error occurred while loading folder. Please try again."});
+			setLoading(false);
 		}
 	};
 
