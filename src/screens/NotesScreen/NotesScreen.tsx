@@ -19,7 +19,6 @@ import Note from "./components/Note";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
-import Animated, { ZoomIn } from "react-native-reanimated";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
