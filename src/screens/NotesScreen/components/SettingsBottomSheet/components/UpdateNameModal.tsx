@@ -5,9 +5,10 @@ import TextInput from "../../../../../components/TextInput";
 interface UpdateNameModalProps extends BaseModalProps {
   onSave: (name: string) => Promise<void>;
   currentName: string;
+	title: string;
 }
 
-const UpdateNameModal = ({ isVisible, onClose, onSave, currentName }: UpdateNameModalProps) => {
+const UpdateNameModal = ({ isVisible, onClose, onSave, currentName, title }: UpdateNameModalProps) => {
 	const [name, setName] = useState(currentName);
 
 	useEffect(() => setName(currentName), [currentName]);
@@ -19,7 +20,7 @@ const UpdateNameModal = ({ isVisible, onClose, onSave, currentName }: UpdateName
 
 	return (
 		<Modal
-			title="Update folder name"
+			title={title}
 			isVisible={isVisible}
 			onClose={close}
 			buttons={{ cancel: { text: "Cancel" }, confirm: { text: "Save" } }}

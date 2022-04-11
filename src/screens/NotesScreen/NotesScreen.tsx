@@ -19,6 +19,7 @@ import Note from "./components/Note";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
+import NoteSettings from "./components/SettingsBottomSheet/NoteSettingsBottomSheet";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -30,10 +31,12 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const [currentFolderData, setCurrentFolderData] = useState<RootFolder | Folder | undefined | null>(null);
 	const [currentFolderRef, setCurrentFolderRef] = useState<DocumentReference<RootFolder | Folder> | null>(null);
 	const [selectedFolder, setSelectedFolder] = useState<SubFolder | null>(null);
+	const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
 	const [loading, setLoading] = useState<boolean>(true);
 
 	const [isSettingsBottomSheetVisible, setIsSettingsBottomSheetVisible] = useState<boolean>(false);
+	const [isNoteSettingsVisible, setIsNoteSettingsVisible] = useState<boolean>(false);
 	const [isNewFolderModalVisible, setIsNewFolderModalVisible] = useState<boolean>(false);
 
 	const [isImageModalVisible, setIsImageModalVisible] = useState<boolean>(false);
@@ -74,6 +77,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const onFolderLongPress = (folder: SubFolder) => {
 		setSelectedFolder(folder);
 		setIsSettingsBottomSheetVisible(true);
+	};
+
+	const onNoteLongPress = (note: Note) => {
+		setSelectedNote(note);
+		setIsNoteSettingsVisible(true);
 	};
 
 	const onAddFolder = async (newFolder: NewFolder) => {
@@ -144,6 +152,14 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		}
 	};
 
+	const onRenameNote = async (noteId: string, name: string) => {
+		await new Promise((t) => setTimeout(t, 2000));
+	};
+
+	const onDeleteNote = async () => {
+		await new Promise(t => setTimeout(t, 2000));
+	};
+
 	const actions: IActionProps[] = [
 		{
 			name: "Folder",
@@ -171,7 +187,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					<Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />
 				))}
 				{currentFolderData &&
-					currentFolderData.notes?.map((note, index) => <Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => null} />)}
+					currentFolderData.notes?.map((note, index) => (
+						<Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => onNoteLongPress(note)} />
+					))}
 			</>
 		);
 	};
@@ -204,6 +222,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					onUpdateFolder={(folderId, data) => onUpdateSubFolder(folderId, data)}
 				/>
 			)}
+			{selectedNote && <NoteSettings note={selectedNote} onDeleteNote={onDeleteNote} open={isNoteSettingsVisible} onClose={() => setIsNoteSettingsVisible(false)} onRenameNote={onRenameNote} />}
 			{currentFolderData?.notes && (
 				<ImageViewer
 					visible={isImageModalVisible}
