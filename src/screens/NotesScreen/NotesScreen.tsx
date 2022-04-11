@@ -162,8 +162,8 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		},
 	];
 
-	const showImageViewer = (index: number) => {
-		setImageIndex(index);
+	const showImageViewer = (imageIndex: number) => {
+		setImageIndex(imageIndex);
 		setIsImageModalVisible(true);
 	};
 
@@ -184,7 +184,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	return (
 		<View style={{ flex: 1 }}>
 			<ScrollView refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}>
-				<View style={{ ...styles.container }}><FolderItems /></View>
+				<View style={styles.container}>
+					<FolderItems />
+				</View>
 			</ScrollView>
 			<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={onAddFolder} />
 			<FloatingAction
