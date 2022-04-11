@@ -54,7 +54,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				setLoading(false);
 			}
 		} catch (error) {
-			Toast.show({ type: "error", title: "Error", description: "An error occurred while loading folder. Please try again."});
+			Toast.show({ type: "error", title: "Error", description: "An error occurred while loading folder. Please try again." });
 			setLoading(false);
 		}
 	};
@@ -223,7 +223,6 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		flexWrap: "wrap",
 		backgroundColor: "#fff",
-		marginTop: 40,
 	},
 });
 
