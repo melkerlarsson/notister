@@ -2,7 +2,6 @@ import { useWindowDimensions, View, Text } from "react-native";
 import Modal from "react-native-modal";
 import { StatusBar } from "expo-status-bar";
 import { default as ImageSlider } from "react-native-image-zoom-viewer";
-import Button from "../../../../components/Button";
 
 type ImageData = {
 	url: string;
