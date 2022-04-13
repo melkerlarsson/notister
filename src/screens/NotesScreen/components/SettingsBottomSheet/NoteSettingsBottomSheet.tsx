@@ -69,7 +69,7 @@ const NoteSettings = ({ open, onClose, note, onDeleteNote, onRenameNote }: NoteS
 					<View style={styles.content}>
 						<View style={styles.heading}>
 							<Ionicons color="#000" size={24} name="clipboard-outline" />
-							<TouchableOpacity onPress={onUpdateNameButtonPressed} >
+							<TouchableOpacity onPress={onUpdateNameButtonPressed}>
 								<Text style={styles.title}>{note.name}</Text>
 							</TouchableOpacity>
 						</View>
@@ -81,7 +81,13 @@ const NoteSettings = ({ open, onClose, note, onDeleteNote, onRenameNote }: NoteS
 					</View>
 				</BottomSheet>
 			</Portal>
-			<UpdateNameModal title="Update note name" isVisible={isUpdateNameModalVisible} onClose={() => setIsUpdateNameModalVisible(false)} currentName={note.name} onSave={async (name) => await onRenameNote(note.id, name)} />
+			<UpdateNameModal
+				title="Update note name"
+				isVisible={isUpdateNameModalVisible}
+				onClose={() => setIsUpdateNameModalVisible(false)}
+				currentName={note.name}
+				onSave={async (name) => await onRenameNote(note.id, name)}
+			/>
 			<ConfirmationModal
 				title="Delete note"
 				description="Are you sure that you want to delete this note? This action is irreversible"
