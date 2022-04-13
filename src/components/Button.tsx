@@ -9,7 +9,7 @@ interface ButtonProps {
   children?: string | React.ReactElement;
 }
 
-const Button = ({ title, style, textStyle, onPress, reversed, children }: ButtonProps) => {
+const Button = ({ title, style, textStyle, onPress, reversed, children}: ButtonProps) => {
 	const reversedButtonStyles = () => {
 		if (!reversed) return {};
 

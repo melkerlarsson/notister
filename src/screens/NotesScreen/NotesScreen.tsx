@@ -227,7 +227,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				<ImageViewer
 					visible={isImageModalVisible}
 					onClose={() => setIsImageModalVisible(false)}
-					images={Array.from(currentFolderData.notes, (note) => ({ url: note.imageUrl }))}
+					images={Array.from(currentFolderData.notes, (note) => ({ url: note.imageUrl, name: note.name }))}
 					startIndex={imageIndex}
 				/>
 			)}
