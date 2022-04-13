@@ -3,7 +3,6 @@ import BottomSheet, { BottomSheetBackdrop, useBottomSheetSpringConfigs } from "@
 import { Portal, PortalHost } from "@gorhom/portal";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Divider from "../../../../components/Divider";
-import FolderIcon from "../../../../components/FolderIcon";
 
 import { Ionicons } from "@expo/vector-icons";
 import ConfirmationModal from "../../../../components/ConfirmationModal";
