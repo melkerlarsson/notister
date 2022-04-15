@@ -16,17 +16,14 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 		email = email.trim();
 		email = email.toLowerCase();
 		createUserWithEmailAndPassword(auth, email, password)
-			.then((userCredential) => {
+			.then(async (userCredential) => {
 				const user = userCredential.user;
-				sendEmailVerification(user);
+				await sendEmailVerification(user);
 
 				navigation.push("SignIn");
 			})
 			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				setErrorMessage(errorMessage);
-				// ..
+				setErrorMessage("Error signing up. Please try again.");
 			});
 	};
 
