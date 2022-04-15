@@ -3,8 +3,8 @@ import { deleteObject } from "firebase/storage";
 import { v4 as createId } from "uuid";
 import { DEFAULT_FOLDER_COLOR } from "../theme/colors";
 import { collections, notesStorageRef } from "./config";
+import { ApiResponse, ErrorMessage } from "./types";
 
-type ErrorMessage = { title: string; description: string };
 
 type AddFolderProps = {
 	newFolder: NewFolder;
@@ -82,9 +82,7 @@ type UpdateSubFolderProps = {
 	parentFolderData: RootFolder | Folder;
 };
 
-type UpdateSubFolderResponse = { data: RootFolder | Folder; error: null } | { data: null; error: ErrorMessage };
-
-export const updateSubFolder = async ({ folderId, data, parentFolderRef, parentFolderData }: UpdateSubFolderProps): Promise<UpdateSubFolderResponse> => {
+export const updateSubFolder = async ({ folderId, data, parentFolderRef, parentFolderData }: UpdateSubFolderProps): Promise<ApiResponse<RootFolder | Folder>> => {
 	const subFolderToUpdate = parentFolderData.subFolders.find((folder) => folder.id === folderId);
 
 	if (!subFolderToUpdate) return { error: { title: "Error", description: "Error updating folder. Please try again." }, data: null };
