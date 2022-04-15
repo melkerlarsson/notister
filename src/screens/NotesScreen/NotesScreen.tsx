@@ -153,11 +153,26 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const onRenameNote = async (noteId: string, name: string) => {
-		await new Promise((t) => setTimeout(t, 2000));
+		if (!currentFolderRef || !currentFolderData) return;
+
+		const { error, data } = await noteAPI.renameNote({ id: noteId, name: name, parentFolderRef: currentFolderRef, notes: currentFolderData.notes });
+
+		if (error) {
+			Toast.show({ type: "error", title: error.title, description: error.description });
+		} else {
+			setCurrentFolderData({ ...currentFolderData, notes: data });
+		}
 	};
 
-	const onDeleteNote = async () => {
-		await new Promise(t => setTimeout(t, 2000));
+	const onDeleteNote = async (noteId: string) => {
+		if (!currentFolderRef || !currentFolderData) return;
+		const { error, data } = await noteAPI.deleteNoteAndRemoveFromFolder({ id: noteId, parentFolderRef: currentFolderRef, notes: currentFolderData.notes });
+
+		if (error) {
+			Toast.show({ type: "error", title: error.title, description: error.description });
+		} else {
+			setCurrentFolderData({ ...currentFolderData, notes: data });
+		}
 	};
 
 	const actions: IActionProps[] = [
