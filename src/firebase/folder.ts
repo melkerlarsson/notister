@@ -3,7 +3,7 @@ import { deleteObject } from "firebase/storage";
 import { v4 as createId } from "uuid";
 import { DEFAULT_FOLDER_COLOR } from "../theme/colors";
 import { collections, notesStorageRef } from "./config";
-import { ApiResponse, ErrorMessage } from "./types";
+import { ApiResponse } from "./types";
 
 
 type AddFolderProps = {

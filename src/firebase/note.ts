@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { DocumentReference, updateDoc } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { notesStorageRef } from "./config";
-import { ApiResponse, ErrorMessage } from "./types";
+import { ApiResponse } from "./types";
 
 const convertImageToBlob = async (url: string): Promise<Blob> => {
 	const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
