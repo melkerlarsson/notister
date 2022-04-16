@@ -1,34 +1,23 @@
 import { NavigationContainer, RouteProp } from "@react-navigation/native";
-import {
-	BottomTabNavigationOptions,
-	BottomTabScreenProps,
-	createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
+import { BottomTabNavigationOptions, BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SettingsScreen, StudyScreen } from "../screens";
 import { Ionicons } from "@expo/vector-icons";
 import NotesStack from "./NotesStack";
 
 type TabParamBase = {
 	Settings: undefined;
-	NotesTab:
-		| { folders: SubFolder[] | null | undefined; folderName: string }
-		| undefined;
+	NotesTab: { folders: SubFolder[] | null | undefined; folderName: string } | undefined;
 	Study: undefined;
 };
 
 export const Tab = createBottomTabNavigator<TabParamBase>();
 
-export type NotesTabScreenProps = BottomTabScreenProps<
-	TabParamBase,
-	"NotesTab"
->;
+export type NotesTabScreenProps = BottomTabScreenProps<TabParamBase, "NotesTab">;
 
 export const TAB_BAR_HEIGHT = 70;
 
 const HomeStack = () => {
-	const screenOptions = (
-		route: RouteProp<TabParamBase, keyof TabParamBase>
-	): BottomTabNavigationOptions => {
+	const screenOptions = (route: RouteProp<TabParamBase, keyof TabParamBase>): BottomTabNavigationOptions => {
 		return {
 			tabBarShowLabel: true,
 			tabBarStyle: {
@@ -44,15 +33,15 @@ const HomeStack = () => {
 				let iconname: keyof typeof Ionicons.glyphMap;
 
 				switch (route.name) {
-				case "NotesTab":
-					iconname = focused ? "folder" : "folder-outline";
-					break;
-				case "Settings":
-					iconname = focused ? "md-settings" : "md-settings-outline";
-					break;
-				case "Study":
-					iconname = focused ? "book" : "book-outline";
-					break;
+					case "NotesTab":
+						iconname = focused ? "folder" : "folder-outline";
+						break;
+					case "Settings":
+						iconname = focused ? "md-settings" : "md-settings-outline";
+						break;
+					case "Study":
+						iconname = focused ? "book" : "book-outline";
+						break;
 				}
 
 				return <Ionicons name={iconname} size={size} color={color} />;
@@ -64,10 +53,7 @@ const HomeStack = () => {
 
 	return (
 		<NavigationContainer>
-			<Tab.Navigator
-				initialRouteName="Study"
-				screenOptions={({ route }) => screenOptions(route)}
-			>
+			<Tab.Navigator initialRouteName="Study" screenOptions={({ route }) => screenOptions(route)}>
 				<Tab.Screen name="NotesTab" component={NotesStack} />
 				<Tab.Screen name="Study" component={StudyScreen} />
 				<Tab.Screen name="Settings" component={SettingsScreen} />
