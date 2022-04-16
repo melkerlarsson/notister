@@ -1,16 +1,17 @@
 import { View, Text, StyleSheet, TextInput } from "react-native";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { AuthError, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Button from "../../components/Button";
 import { useState } from "react";
 import { SignUpScreenNavigationProps } from "../../navigation/AuthStack";
 import { auth } from "../../firebase/config";
+import { folderAPI } from "../../firebase";
+import Toast from "../../components/Toast";
 
 type SignUpScreenProps = SignUpScreenNavigationProps;
 
 const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [errorMessage, setErrorMessage] = useState("");
 
 	const signUp = (email: string, password: string) => {
 		email = email.trim();
@@ -18,12 +19,26 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 		createUserWithEmailAndPassword(auth, email, password)
 			.then(async (userCredential) => {
 				const user = userCredential.user;
-				await sendEmailVerification(user);
+				void sendEmailVerification(user);
+				const error = await folderAPI.createRootFolder(user.uid);
 
-				navigation.push("SignIn");
+				if (error) {
+					Toast.show({ type: "error", title: error.title, description: error.description });
+				} else {
+					navigation.push("SignIn");
+				}
 			})
-			.catch((error) => {
-				setErrorMessage("Error signing up. Please try again.");
+			.catch((error: AuthError) => {
+				let message = "";
+				console.log(error.message);
+				switch (error.message) {
+					case "auth/weak-password":
+						message = "The password is too weak.";
+						break;
+					default:
+						message = "Error signing up. Please try again.";
+				}
+				Toast.show({ type: "error", title: "Error", description: message });
 			});
 	};
 
@@ -59,7 +74,6 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 					textContentType="newPassword"
 					autoCompleteType="password"
 				/>
-				{errorMessage ? <Text>{errorMessage}</Text> : null}
 				<Button title="Sign Up" onPress={() => signUp(email, password)} />
 			</View>
 		</View>

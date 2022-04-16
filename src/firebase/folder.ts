@@ -3,8 +3,22 @@ import { deleteObject } from "firebase/storage";
 import { v4 as createId } from "uuid";
 import { DEFAULT_FOLDER_COLOR } from "../theme/colors";
 import { collections, notesStorageRef } from "./config";
-import { ApiResponse } from "./types";
+import { ApiResponse, ErrorMessage } from "./types";
 
+export const createRootFolder = async (userId: string): Promise<ErrorMessage | null> => {
+	const rootFolder: RootFolder = {
+		id: userId,
+		subFolders: [],
+		notes: [],
+		userId,
+	};
+	try {
+		await setDoc(doc(collections.rootFolders, userId), rootFolder);
+		return null;
+	} catch (error) {
+		return { title: "Error", description: "Error creating root folder. Please try again."};
+	}
+};
 
 type AddFolderProps = {
 	newFolder: NewFolder;
