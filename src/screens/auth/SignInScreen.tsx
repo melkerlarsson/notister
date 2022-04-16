@@ -1,9 +1,8 @@
-import { AuthError, getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import React, { useContext, useState } from "react";
+import { AuthError, signInWithEmailAndPassword } from "firebase/auth";
+import React, {  useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import Button from "../../components/Button";
 import { SignInScreenNavigationProps } from "../../navigation/AuthStack";
-import { CommonActions } from "@react-navigation/native";
 import { auth } from "../../firebase/config";
 import { Dispatch } from "redux";
 import { setUser, UserAction } from "../../redux/user/userActions";
