@@ -1,5 +1,7 @@
 type FolderColor = { name: string; color: string };
 
+export const HEADER_BACKGROUND_COLOR = "rgb(255, 255, 255)";
+
 export const COLORS = {
 	primary: "#269dff",
 	error: "rgb(255, 30, 0)",

@@ -2,6 +2,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet, LogBox } from "react-native";
 import { PortalProvider } from "@gorhom/portal";
 import { ToastProvider } from "./src/components/Toast";
+import { StatusBar } from "expo-status-bar";
 
 import { Provider } from "react-redux";
 import store from "./src/redux/store";
@@ -14,6 +15,7 @@ export default function App() {
 	return (
 		<GestureHandlerRootView style={styles.container}>
 			<Provider store={store}>
+				<StatusBar translucent />
 				<PortalProvider>
 					<Routes />
 				</PortalProvider>
