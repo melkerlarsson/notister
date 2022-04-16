@@ -55,14 +55,13 @@ const HomeStack = () => {
 				fontWeight: "bold",
 				fontSize: 20,
 			},
-			lazy: route.name !== "NotesTab",
 		};
 	};
 
 	return (
 		<NavigationContainer>
 			<Tab.Navigator initialRouteName="Study" screenOptions={({ route }) => screenOptions(route)}>
-				<Tab.Screen name="NotesTab" component={NotesStack} options={{ headerShown: false }} />
+				<Tab.Screen name="NotesTab" component={NotesStack} options={{ headerShown: false, lazy: false, }} />
 				<Tab.Screen name="Study" component={StudyScreen} />
 				<Tab.Screen name="Settings" component={SettingsScreen} />
 			</Tab.Navigator>
