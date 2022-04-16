@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { AuthError, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import Button from "../../components/Button";
@@ -8,6 +8,7 @@ import { auth } from "../../firebase/config";
 import { Dispatch } from "redux";
 import { setUser, UserAction } from "../../redux/user/userActions";
 import { useDispatch } from "react-redux";
+import Toast from "../../components/Toast";
 
 type SignInScreenProps = SignInScreenNavigationProps;
 
@@ -16,13 +17,10 @@ const SignInScreen = ({ navigation }: SignInScreenProps) => {
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [errorMessage, setErrorMessage] = useState("");
 
 	const signIn = (email: string, password: string) => {
 		email = email.trim();
 		email = email.toLowerCase();
-
-		console.log("Before signin in");
 
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
@@ -31,16 +29,14 @@ const SignInScreen = ({ navigation }: SignInScreenProps) => {
 				console.log(user.email);
 
 				if (!user.emailVerified) {
-					setErrorMessage("Please verify your email before signing in");
+					Toast.show({ type: "error", title: "Error signing in", description: "Please verify your email before signing in" });
 				} else {
 					dispatch(setUser(user));
 				}
 			})
-			.catch((error) => {
-				const errorCode = error.code;
+			.catch((error: AuthError) => {
 				const errorMessage = error.message;
-				setErrorMessage(errorMessage);
-				console.log(errorMessage);
+				Toast.show({ type: "error", title: "Error signing in", description: errorMessage});
 			});
 	};
 
@@ -76,7 +72,6 @@ const SignInScreen = ({ navigation }: SignInScreenProps) => {
 					textContentType="password"
 					autoCompleteType="password"
 				/>
-				{errorMessage ? <Text>{errorMessage}</Text> : null}
 				<Button title="Sign In" onPress={() => signIn(email, password)} />
 			</View>
 		</View>
