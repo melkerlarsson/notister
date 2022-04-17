@@ -12,14 +12,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 
 import { v4 as createUuid } from "uuid";
-import SettingsBottomSheet from "./components/SettingsBottomSheet/SettingsBottomSheet";
+import FolderSettings from "./components/SettingsBottomSheet/FolderSettings";
 
 import * as DocumentPicker from "expo-document-picker";
 import Note from "./components/Note";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
-import NoteSettings from "./components/SettingsBottomSheet/NoteSettingsBottomSheet";
+import NoteSettings from "./components/SettingsBottomSheet/NoteSettings";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -229,12 +229,13 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				}}
 			/>
 			{selectedFolder && (
-				<SettingsBottomSheet
+				<FolderSettings
 					folder={selectedFolder}
 					onDeleteFolder={(folderId) => onDeleteFolder(folderId)}
 					open={isSettingsBottomSheetVisible}
 					onClose={() => setIsSettingsBottomSheetVisible(false)}
 					onUpdateFolder={(folderId, data) => onUpdateSubFolder(folderId, data)}
+					onShareFolder={(email) => Promise.resolve(console.log(email))}
 				/>
 			)}
 			{selectedNote && <NoteSettings note={selectedNote} onDeleteNote={onDeleteNote} open={isNoteSettingsVisible} onClose={() => setIsNoteSettingsVisible(false)} onRenameNote={onRenameNote} />}

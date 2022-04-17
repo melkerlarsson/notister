@@ -35,7 +35,7 @@ interface ModalProps {
 
 	onClose: () => void;
 	onButtonPress: () => void | Promise<void>;
-	validation?: Validation;
+	validations?: Validation[];
 }
 
 const Modal = ({
@@ -46,7 +46,7 @@ const Modal = ({
 	isVisible,
 	withLoadingIndicator = true,
 	onClose,
-	validation,
+	validations = [],
 	onButtonPress,
 }: ModalProps) => {
 	const { width } = useWindowDimensions();
@@ -56,7 +56,7 @@ const Modal = ({
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const onConfirmButtonPressed = async () => {
-		if (validation) {
+		for (const validation of validations) {
 			if (validation.validate()) {
 				setErrorMessage("");
 				setLoading(true);
@@ -66,13 +66,14 @@ const Modal = ({
 			} else {
 				setErrorMessage(validation.errorMessage);
 			}
-		} else {
-			setLoading(true);
-			await onButtonPress();
-			onClose();
-			setLoading(false);
 		}
 	};
+
+	useEffect(() => {
+		if (isVisible) return;
+
+		setTimeout(() => setErrorMessage(""), 200);
+	}, [isVisible]);
 
 	return (
 		<RnModal

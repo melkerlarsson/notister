@@ -12,21 +12,25 @@ import ColorPickerModal from "./components/ColorPickerModal";
 import UpdateNameModal from "./components/UpdateNameModal";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { COLORS } from "../../../../theme/colors";
+import Modal from "../../../../components/Modal";
+import ShareModal from "./components/ShareModal";
 
-interface SettingsBottomSheetProps {
+interface FolderSettingsProps {
 	open: boolean;
 	onClose: () => void;
 	folder: SubFolder;
 	onDeleteFolder: (folderId: string) => Promise<void>;
 	onUpdateFolder: (folderId: string, data: Partial<Folder>) => Promise<void>;
+	onShareFolder: (email: string) => Promise<void>;
 }
 
-const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFolder }: SettingsBottomSheetProps) => {
+const FolderSettings = ({ open, onClose, folder, onDeleteFolder, onUpdateFolder, onShareFolder }: FolderSettingsProps) => {
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
 	const [isConfimationModalVisible, setIsConfimationModalVisible] = useState(false);
 	const [isColorPickerModalVisible, setIsColorPickerModalVisible] = useState(false);
 	const [isUpdateNameModalVisible, setIsUpdateNameModalVisible] = useState(false);
+	const [isShareFolderModalVisible, setIsShareFolderModalVisible] = useState(false);
 
 	useEffect(() => {
 		if (open) {
@@ -69,6 +73,11 @@ const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFo
 		setIsUpdateNameModalVisible(true);
 	};
 
+	const onShareModalButtonPressed = () => {
+		bottomSheetRef.current?.close();
+		setIsShareFolderModalVisible(true);
+	};
+
 	return (
 		<>
 			<Portal>
@@ -82,7 +91,7 @@ const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFo
 						</View>
 						<Divider />
 
-						<MenuOption disabled text="Share" icon={<Ionicons name="person-add-outline" size={24} />} onPress={() => null} />
+						<MenuOption text="Share" icon={<Ionicons name="person-add-outline" size={24} />} onPress={onShareModalButtonPressed} />
 						<MenuOption text="Update Name" icon={<Ionicons name="pencil-sharp" size={24} />} onPress={onUpdateNameButtonPressed} />
 						<MenuOption text="Color" icon={<Ionicons name="md-color-palette-outline" size={24} />} onPress={onColorButtonPressed} />
 						<MenuOption text="Delete" textColor={COLORS.error} icon={<Ionicons name="trash-outline" size={24} color={COLORS.error} />} onPress={onDeleteButtonPressed} />
@@ -102,6 +111,7 @@ const SettingsBottomSheet = ({ open, onClose, folder, onDeleteFolder, onUpdateFo
 				currentName={folder.name}
 				onSave={async (name) => await onUpdateFolder(folder.id, { name: name })}
 			/>
+			<ShareModal isVisible={isShareFolderModalVisible} onClose={() => setIsShareFolderModalVisible(false)} onSave={async (email) => onShareFolder(email)} />
 			<ConfirmationModal
 				title="Delete folder"
 				description="Are you sure that you want to delete this folder and all of its content? This action is irreversible"
@@ -131,4 +141,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default SettingsBottomSheet;
+export default FolderSettings;

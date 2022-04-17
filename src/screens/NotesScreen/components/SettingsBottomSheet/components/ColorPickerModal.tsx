@@ -8,16 +8,22 @@ import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface ColorPickerModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSave: (color: string) => Promise<void>;
-  currentColor: string;
+	isVisible: boolean;
+	onClose: () => void;
+	onSave: (color: string) => Promise<void>;
+	currentColor: string;
 }
 
 const ColorPickerModal = ({ isVisible, onClose, onSave, currentColor }: ColorPickerModalProps) => {
 	const [selectedColor, setSelectedColor] = useState("");
 
 	useEffect(() => setSelectedColor(currentColor), [currentColor]);
+
+	useEffect(() => {
+		if (isVisible === true) return;
+
+		setTimeout(() => setSelectedColor(currentColor), 200);
+	}, [isVisible]);
 
 	const onSaveButtonPressed = async () => {
 		await onSave(selectedColor);
