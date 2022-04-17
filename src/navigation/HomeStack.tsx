@@ -3,7 +3,7 @@ import { BottomTabNavigationOptions, BottomTabScreenProps, createBottomTabNaviga
 import { SettingsScreen, StudyScreen } from "../screens";
 import { Ionicons } from "@expo/vector-icons";
 import NotesStack from "./NotesStack";
-import { HEADER_BACKGROUND_COLOR } from "../theme/colors";
+import { COLORS, HEADER_BACKGROUND_COLOR } from "../theme/colors";
 
 type TabParamBase = {
 	Settings: undefined;
@@ -27,9 +27,9 @@ const HomeStack = () => {
 				alignItems: "center",
 				paddingBottom: 10,
 				backgroundColor: "#ffffff",
-				// borderTopLeftRadius: 15,
-				// borderTopRightRadius: 15,
 			},
+			tabBarActiveTintColor: COLORS.primary,
+			tabBarInactiveTintColor: "#aaaaaa",
 			tabBarIcon: ({ focused, color, size }) => {
 				let iconname: keyof typeof Ionicons.glyphMap;
 
@@ -61,7 +61,7 @@ const HomeStack = () => {
 	return (
 		<NavigationContainer>
 			<Tab.Navigator initialRouteName="Study" screenOptions={({ route }) => screenOptions(route)}>
-				<Tab.Screen name="NotesTab" component={NotesStack} options={{ headerShown: false, lazy: false, }} />
+				<Tab.Screen name="NotesTab" component={NotesStack} options={{ headerShown: false, lazy: false, title: "Notes" }} />
 				<Tab.Screen name="Study" component={StudyScreen} />
 				<Tab.Screen name="Settings" component={SettingsScreen} />
 			</Tab.Navigator>
