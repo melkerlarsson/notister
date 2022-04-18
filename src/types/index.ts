@@ -40,6 +40,14 @@ type SharedUser = {
   name: string;
 };
 
+type StudyData = {
+  id: string;
+  imageUrl: string;
+  reviewDate: Date;
+  lastReivewInterval: number;
+  reviewDates: Date[];
+};
+
 type Only<T, U> = {
 	[P in keyof T]: T[P];
 } & {

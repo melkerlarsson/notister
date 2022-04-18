@@ -21,6 +21,7 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 const storage = getStorage(app);
 export const notesStorageRef = (id: string) => ref(storage, `notes/${id}`);
+export const studyDataRef = (userId: string) => ref(storage, `studyData/${userId}`);
 
 initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
 export const auth = getAuth();
@@ -35,6 +36,7 @@ const DataPoint = <T>(collectionPath: string) => collection(db, collectionPath).
 export const collections = {
 	folders: DataPoint<Folder>("folders"),
 	rootFolders: DataPoint<RootFolder>("rootFolders"),
+	studyData: DataPoint<{ [key: string]: StudyData }>("studyData"),
 };
 
 // type PathImpl<T, K extends keyof T> =

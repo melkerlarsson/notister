@@ -11,6 +11,15 @@ const convertImageToBlob = async (url: string): Promise<Blob> => {
 	return response.data;
 };
 
+type InitializeStudyDataProps = {
+	imageUrl: string;
+	userId: string;
+};
+
+export const InitializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps) => {
+	
+};
+
 type UploadImageProps = {
 	url: string;
 	id: string;
