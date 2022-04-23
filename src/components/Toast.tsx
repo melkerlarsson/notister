@@ -26,7 +26,7 @@ type ShowProps = {
 };
 
 const show = ({ title, description, type = "success", duration = 3000 }: ShowProps) => {
-	ToastMessage.show({ text1: title, text2: description, type, position: "bottom", autoHide: true, visibilityTime: duration });
+	ToastMessage.show({ text1: title, text2: description, type, position: "bottom", autoHide: type !== "error", visibilityTime: duration });
 };
 
 const hide = () => ToastMessage.hide();
