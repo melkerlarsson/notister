@@ -1,15 +1,15 @@
-import { View, StyleSheet, Text, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
 
 interface ButtonProps {
-  title?: string;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  onPress: () => void;
-  reversed?: boolean;
-  children?: string | React.ReactElement;
+	title?: string;
+	style?: ViewStyle;
+	textStyle?: TextStyle;
+	onPress: () => void;
+	reversed?: boolean;
+	children?: string | React.ReactElement;
 }
 
-const Button = ({ title, style, textStyle, onPress, reversed, children}: ButtonProps) => {
+const Button = ({ title, style, textStyle, onPress, reversed, children }: ButtonProps) => {
 	const reversedButtonStyles = () => {
 		if (!reversed) return {};
 
