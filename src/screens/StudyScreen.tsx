@@ -1,11 +1,15 @@
-import { View, Text, Platform, useWindowDimensions } from "react-native";
-import Toast from "react-native-toast-message";
-import Button from "../components/Button";
+import { View, Text } from "react-native";
+
 
 interface StudyScreenProps {}
 
 const StudyScreen = ({}: StudyScreenProps) => {
-	return <Text>Study Page</Text>;
+
+	return (
+		<View>
+			<Text>Study Screen</Text>
+		</View>
+	);
 };
 
 export default StudyScreen;
