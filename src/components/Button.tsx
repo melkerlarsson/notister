@@ -1,41 +1,28 @@
 import { StyleSheet, Text, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
+import { COLORS } from "../theme/colors";
 
 interface ButtonProps {
 	title?: string;
-	style?: ViewStyle;
+	style?: ViewStyle | ViewStyle[];
 	textStyle?: TextStyle;
 	onPress: () => void;
-	reversed?: boolean;
+	inverted?: boolean;
 	children?: string | React.ReactElement;
 }
 
-const Button = ({ title, style, textStyle, onPress, reversed, children }: ButtonProps) => {
-	const reversedButtonStyles = () => {
-		if (!reversed) return {};
+const Button = ({ title, style, textStyle, onPress, inverted, children }: ButtonProps) => {
 
-		return {
-			backgroundColor: "#fff",
-		};
-	};
-
-	const reversedTextSyle = () => {
-		if (!reversed) return {};
-
-		return {
-			color: "#269dff",
-		};
-	};
 
 	return (
-		<TouchableOpacity onPress={onPress} style={[styles.button, style, reversedButtonStyles()]} activeOpacity={0.8}>
+		<TouchableOpacity onPress={onPress} style={[styles.button, style, { backgroundColor: inverted ? "#fff" : COLORS.primary, }]} activeOpacity={0.8}>
 			{children ? (
 				typeof children === "string" ? (
-					<Text style={[styles.text, textStyle, reversedTextSyle()]}>{children}</Text>
+					<Text style={[styles.text, textStyle, { color: inverted ? COLORS.primary : "#fff"}]}>{children}</Text>
 				) : (
 					children
 				)
 			) : (
-				<Text style={[styles.text, textStyle, reversedTextSyle()]}>{title}</Text>
+				<Text style={[styles.text, textStyle, { color: inverted ? COLORS.primary : "#fff"}]}>{title}</Text>
 			)}
 		</TouchableOpacity>
 	);
@@ -43,19 +30,15 @@ const Button = ({ title, style, textStyle, onPress, reversed, children }: Button
 
 const styles = StyleSheet.create({
 	button: {
-		backgroundColor: "#269dff",
 		paddingHorizontal: 20,
 		paddingVertical: 10,
 		width: 200,
 		height: 50,
 		justifyContent: "center",
 		alignItems: "center",
-		borderRadius: 25,
-		shadowColor: "#269dff",
-		shadowOffset: { width: 2, height: 4 },
-		shadowOpacity: 0.2,
-		shadowRadius: 3,
-		elevation: 20,
+		borderRadius: 15,
+		borderColor: COLORS.primary,
+		borderWidth: 1,
 	},
 	text: {
 		color: "#fff",
