@@ -1,14 +1,27 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 
-const Divider = () => {
-	return <View style={styles.divider} />;
+type DividerProps = {
+	text?: string;
+};
+
+const Divider = ({ text }: DividerProps) => {
+	if (!text) {
+		return <View style={[styles.divider, { width: "100%" }]} />;
+	} else {
+		return (
+			<View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+				<View style={[styles.divider, { flex: 1, marginVertical: 15 }]} />
+				<Text style={{ marginHorizontal: 10 }}>{text}</Text>
+				<View style={[styles.divider, { flex: 1, marginVertical: 15 }]} />
+			</View>
+		);
+	}
 };
 
 const styles = StyleSheet.create({
 	divider: {
-		width: "100%",
 		height: 1,
-		backgroundColor: "#c9c9c9",
+		backgroundColor: "#d4d4d4",
 		marginVertical: 10,
 	},
 });
