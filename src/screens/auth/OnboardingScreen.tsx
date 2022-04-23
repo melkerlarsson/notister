@@ -8,8 +8,8 @@ type OnboardingScreenProps = OnboardingScreenNavigationProps;
 const OnboardingScreen = ({ navigation }: OnboardingScreenProps) => {
 	return (
 		<View style={styles.container}>
-			<Text>Welcome to Notister</Text>
-			<Button style={{ marginTop: 20 }} title="Next" onPress={() => navigation.push("Authentication")} />
+			<Text style={styles.text}>Welcome to Notister</Text>
+			<Button style={styles.button} title="Get Started" onPress={() => navigation.push("Authentication")} />
 		</View>
 	);
 };
@@ -20,6 +20,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
+		paddingHorizontal: 30,
+	},
+	button: {
+		width: "100%",
+		position: "absolute", 
+		bottom: 40,
+	},
+	text: {
+		fontSize: 42,
+		fontWeight: "200",
 	},
 });
 

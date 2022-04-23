@@ -1,20 +1,18 @@
 import { View, Text, StyleSheet } from "react-native";
 import { AuthenticationScreenNavigationProps } from "../../navigation/AuthStack";
-import { ResponseType } from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
 import Button from "../../components/Button";
-import { signInWithCredential, signInWithPopup } from "firebase/auth";
-import { useEffect } from "react";
-import { GoogleAuthProvider } from "firebase/auth/react-native";
 
 type AuthenticationScreenProps = AuthenticationScreenNavigationProps;
 
 const AuthenticationScreen = ({ navigation }: AuthenticationScreenProps) => {
 	return (
 		<View style={styles.container}>
-			<Text>Get started by signing in below, or creating an account</Text>
-			<Button style={{ marginTop: 20, marginBottom: 10 }} title="Sign In" onPress={() => navigation.push("SignIn")} />
-			<Button title="Sign Up" onPress={() => navigation.push("SignUp")} />
+			<Text style={{ fontSize: 54, fontWeight: "bold", alignSelf: "flex-start" }}>Notiser</Text>
+			<Text style={{ fontSize: 18, alignSelf: "flex-start", marginBottom: 20 }}>Start reviewing you notes today.</Text>
+			<View style={styles.buttonContainer}>
+				<Button style={[styles.button, { marginVertical: 15 }]} title="Log In" onPress={() => navigation.push("SignIn")} />
+				<Button style={styles.button} inverted title="Sign Up" onPress={() => navigation.push("SignUp")} />
+			</View>
 		</View>
 	);
 };
@@ -23,8 +21,16 @@ const styles = StyleSheet.create({
 	container: {
 		display: "flex",
 		flex: 1,
-		justifyContent: "center",
+		paddingVertical: 40,
+		paddingHorizontal: 30,
+		justifyContent: "flex-end",
 		alignItems: "center",
+	},
+	buttonContainer: {
+		width: "100%",
+	},
+	button: {
+		width: "100%",
 	},
 });
 
