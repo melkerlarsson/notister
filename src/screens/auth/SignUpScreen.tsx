@@ -1,19 +1,34 @@
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { AuthError, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Button from "../../components/Button";
-import { useState } from "react";
+import { object, SchemaOf, string } from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { SignUpScreenNavigationProps } from "../../navigation/AuthStack";
 import { auth } from "../../firebase/config";
 import { folderAPI } from "../../firebase";
-import Toast from "../../components/Toast";
+import { Toast, CustomInput } from "../../components";
 
 type SignUpScreenProps = SignUpScreenNavigationProps;
 
-const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+type FormData = {
+	email: string;
+	password: string;
+};
 
-	const signUp = (email: string, password: string) => {
+const schema: SchemaOf<FormData> = object({
+	email: string().required("This is a required field").email("The field must be a valid email"),
+	password: string().required("This is a required field").min(8, "Your password should be at least 8 characters"),
+}).required();
+
+const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
+	const {
+		control,
+		handleSubmit,
+		setError,
+	} = useForm<FormData>({ mode: "onChange", resolver: yupResolver(schema) });
+
+	const signUp = ({ email, password }: FormData) => {
 		email = email.trim();
 		email = email.toLowerCase();
 		createUserWithEmailAndPassword(auth, email, password)
@@ -29,52 +44,24 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 				}
 			})
 			.catch((error: AuthError) => {
-				let message = "";
-				console.log(error.message);
-				switch (error.message) {
-					case "auth/weak-password":
-						message = "The password is too weak.";
+				console.error(error.code);
+				switch (error.code) {
+					case "auth/email-already-in-use":
+						setError("email", { message: "Email is already in use. Please choose another one." });
 						break;
 					default:
-						message = "Error signing up. Please try again.";
+						Toast.show({ type: "error", title: "Oops, something went wrong", description: "An unexpected error occurred while signing up, please try again" });
 				}
-				Toast.show({ type: "error", title: "Error", description: message });
 			});
 	};
 
 	return (
 		<View style={styles.container}>
-			<Text>Sign Up!</Text>
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					display: "flex",
-				}}
-			>
-				<TextInput
-					style={styles.textInput}
-					onChangeText={(text) => {
-						setEmail(text);
-					}}
-					value={email}
-					placeholder="Email"
-					textContentType="emailAddress"
-					autoCompleteType="email"
-				/>
-
-				<TextInput
-					style={styles.textInput}
-					onChangeText={(text) => {
-						setPassword(text);
-					}}
-					secureTextEntry={true}
-					value={password}
-					placeholder="Password"
-					textContentType="newPassword"
-					autoCompleteType="password"
-				/>
-				<Button title="Sign Up" onPress={() => signUp(email, password)} />
+			<Text style={{ fontSize: 20 }}>Sign up below!</Text>
+			<View style={{ width: "90%", alignItems: "center" }}>
+				<CustomInput control={control} name="email" placeholder="john@example.com" label="Email" textContentType="emailAddress" />
+				<CustomInput control={control} name="password" placeholder="Password" label="Password" secureTextEntry textContentType="password" />
+				<Button title="Sign Up" onPress={handleSubmit(signUp)} style={{ marginTop: 20 }} />
 			</View>
 		</View>
 	);
@@ -84,18 +71,8 @@ const styles = StyleSheet.create({
 	container: {
 		display: "flex",
 		flex: 1,
-		justifyContent: "center",
+		marginTop: 100,
 		alignItems: "center",
-	},
-
-	textInput: {
-		width: 300,
-		height: 50,
-		borderRadius: 25,
-		borderColor: "#269dff",
-		borderWidth: 1,
-		marginVertical: 10,
-		paddingHorizontal: 10,
 	},
 });
 
