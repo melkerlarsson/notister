@@ -53,7 +53,7 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 	};
 
 	return (
-		<KeyboardAvoidingView style={{ minHeight: height }} contentContainerStyle={{ width: "100%", ...styles.container }} behavior="position" keyboardVerticalOffset={-200}>
+		<KeyboardAvoidingView style={{ flex: 1 }} contentContainerStyle={{ width: "100%", ...styles.container }} behavior="position" keyboardVerticalOffset={-200}>
 			<Text style={{ fontSize: 48, fontWeight: "bold", alignSelf: "flex-start", position: "absolute", top: 200, left: 20 }}>Create{"\n"}Account</Text>
 			<View style={{ width: "100%", alignItems: "center" }}>
 				<CustomInput control={control} name="email" placeholder="john@example.com" label="Email" textContentType="emailAddress" />
