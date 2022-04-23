@@ -26,7 +26,6 @@ const schema: SchemaOf<FormData> = object({
 
 const SignInScreen = ({ navigation }: SignInScreenProps) => {
 	const dispatch: Dispatch<UserAction> = useDispatch();
-	const { height } = useWindowDimensions();
 
 	const { control, handleSubmit } = useForm<FormData>({ resolver: yupResolver(schema) });
 

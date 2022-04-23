@@ -23,7 +23,6 @@ const schema: SchemaOf<FormData> = object({
 
 const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 	const { control, handleSubmit, setError } = useForm<FormData>({ mode: "onChange", resolver: yupResolver(schema) });
-	const { height } = useWindowDimensions();
 
 	const signUp = ({ email, password }: FormData) => {
 		email = email.trim();
