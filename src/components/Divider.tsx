@@ -10,9 +10,9 @@ const Divider = ({ text }: DividerProps) => {
 	} else {
 		return (
 			<View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-				<View style={[styles.divider, { flex: 1, marginVertical: 15 }]} />
+				<View style={[styles.divider, { flex: 1, marginVertical: 25 }]} />
 				<Text style={{ marginHorizontal: 10 }}>{text}</Text>
-				<View style={[styles.divider, { flex: 1, marginVertical: 15 }]} />
+				<View style={[styles.divider, { flex: 1, marginVertical: 25 }]} />
 			</View>
 		);
 	}
