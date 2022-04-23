@@ -1,6 +1,6 @@
 import { AuthError, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, useWindowDimensions } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView } from "react-native";
 import Button from "../../components/Button";
 import { SignInScreenNavigationProps } from "../../navigation/AuthStack";
 import { auth } from "../../firebase/config";
