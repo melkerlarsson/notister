@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Platform, KeyboardAvoidingView, useWindowDimensions, ScrollView } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, useWindowDimensions } from "react-native";
 import { AuthError, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Button from "../../components/Button";
 import { object, SchemaOf, string } from "yup";
