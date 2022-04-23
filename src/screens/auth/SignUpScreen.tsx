@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform, KeyboardAvoidingView, useWindowDimensions, ScrollView } from "react-native";
 import { AuthError, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Button from "../../components/Button";
 import { object, SchemaOf, string } from "yup";
@@ -7,7 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { SignUpScreenNavigationProps } from "../../navigation/AuthStack";
 import { auth } from "../../firebase/config";
 import { folderAPI } from "../../firebase";
-import { Toast, CustomInput } from "../../components";
+import { Toast, CustomInput, Divider } from "../../components";
 
 type SignUpScreenProps = SignUpScreenNavigationProps;
 
@@ -22,11 +22,8 @@ const schema: SchemaOf<FormData> = object({
 }).required();
 
 const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
-	const {
-		control,
-		handleSubmit,
-		setError,
-	} = useForm<FormData>({ mode: "onChange", resolver: yupResolver(schema) });
+	const { control, handleSubmit, setError } = useForm<FormData>({ mode: "onChange", resolver: yupResolver(schema) });
+	const { height } = useWindowDimensions();
 
 	const signUp = ({ email, password }: FormData) => {
 		email = email.trim();
@@ -56,14 +53,16 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 	};
 
 	return (
-		<View style={styles.container}>
-			<Text style={{ fontSize: 20 }}>Sign up below!</Text>
-			<View style={{ width: "90%", alignItems: "center" }}>
+		<KeyboardAvoidingView style={{ minHeight: height }} contentContainerStyle={{ width: "100%", ...styles.container }} behavior="position" keyboardVerticalOffset={-200}>
+			<Text style={{ fontSize: 48, fontWeight: "bold", alignSelf: "flex-start", position: "absolute", top: 200, left: 20 }}>Create{"\n"}Account</Text>
+			<View style={{ width: "100%", alignItems: "center" }}>
 				<CustomInput control={control} name="email" placeholder="john@example.com" label="Email" textContentType="emailAddress" />
 				<CustomInput control={control} name="password" placeholder="Password" label="Password" secureTextEntry textContentType="password" />
-				<Button title="Sign Up" onPress={handleSubmit(signUp)} style={{ marginTop: 20 }} />
+				<Button title="Sign up" onPress={handleSubmit(signUp)} style={[styles.button, { marginTop: 40 }]} />
+				<Divider text="or" />
+				<Button title="Log In" onPress={() => navigation.push("SignIn")} inverted style={styles.button} />
 			</View>
-		</View>
+		</KeyboardAvoidingView>
 	);
 };
 
@@ -71,8 +70,13 @@ const styles = StyleSheet.create({
 	container: {
 		display: "flex",
 		flex: 1,
-		marginTop: 100,
+		paddingVertical: 40,
+		paddingHorizontal: 20,
 		alignItems: "center",
+		justifyContent: "flex-end",
+	},
+	button: {
+		width: "100%",
 	},
 });
 

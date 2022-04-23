@@ -10,8 +10,8 @@ const AuthenticationScreen = ({ navigation }: AuthenticationScreenProps) => {
 			<Text style={{ fontSize: 54, fontWeight: "bold", alignSelf: "flex-start" }}>Notiser</Text>
 			<Text style={{ fontSize: 18, alignSelf: "flex-start", marginBottom: 20 }}>Start reviewing your notes today.</Text>
 			<View style={styles.buttonContainer}>
-				<Button style={[styles.button, { marginVertical: 15 }]} title="Log In" onPress={() => navigation.push("SignIn")} />
-				<Button style={styles.button} inverted title="Sign Up" onPress={() => navigation.push("SignUp")} />
+				<Button style={[styles.button, { marginVertical: 15 }]} title="Log in" onPress={() => navigation.push("SignIn")} />
+				<Button style={styles.button} inverted title="Sign up" onPress={() => navigation.push("SignUp")} />
 			</View>
 		</View>
 	);

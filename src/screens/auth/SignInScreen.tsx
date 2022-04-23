@@ -53,7 +53,7 @@ const SignInScreen = ({ navigation }: SignInScreenProps) => {
 	};
 
 	return (
-		<KeyboardAvoidingView style={[styles.container, { minHeight: height }]} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+		<KeyboardAvoidingView style={{ minHeight: height }} contentContainerStyle={{ width: "100%", ...styles.container }} behavior="position" keyboardVerticalOffset={-200}>
 			<Text style={{ fontSize: 48, fontWeight: "bold", alignSelf: "flex-start", position: "absolute", top: 200, left: 20 }}>Welcome{"\n"}back</Text>
 			<View style={{ width: "100%", alignItems: "center" }}>
 				<CustomInput control={control} name="email" placeholder="Your email" label="Email" textContentType="emailAddress" />
