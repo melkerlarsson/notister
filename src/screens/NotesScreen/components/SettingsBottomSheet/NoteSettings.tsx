@@ -47,6 +47,7 @@ const NoteSettings = ({ open, onClose, note, onDeleteNote, onRenameNote }: NoteS
 	const renderBackdrop = useCallback((props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.2} />, []);
 
 	const deleteNote = async () => {
+		console.log("Deleting note");
 		await onDeleteNote(note.id);
 		setIsConfimationModalVisible(false);
 	};

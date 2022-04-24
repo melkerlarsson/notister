@@ -40,6 +40,10 @@ type SharedUser = {
   name: string;
 };
 
+type UserData = {
+  studyData: StudyData[];
+}
+
 type StudyData = {
   id: string;
   imageUrl: string;

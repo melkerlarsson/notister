@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { DocumentReference, updateDoc } from "firebase/firestore";
+import { addDoc, doc, DocumentReference, setDoc, updateDoc } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-import { notesStorageRef } from "./config";
+import { collections, notesStorageRef, studyDataCollection } from "./config";
 import { ApiResponse } from "./types";
+import { v4 as createId } from "uuid";
 
 const convertImageToBlob = async (url: string): Promise<Blob> => {
 	const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
@@ -16,8 +17,25 @@ type InitializeStudyDataProps = {
 	userId: string;
 };
 
-export const InitializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps) => {
-	
+export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps) => {
+	const id = createId();
+	const studyData: StudyData = {
+		id: id,
+		imageUrl: imageUrl,
+		reviewDate: new Date(Date.now()),
+		lastReivewInterval: 0,
+		reviewDates: [],
+	};
+
+	try {
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		await setDoc(doc(studyDataCollection(userId, id)), studyData);
+
+		return null;
+	} catch (error) {
+		return { title: "Error", description: "Error creating root folder. Please try again." };
+	}
 };
 
 type UploadImageProps = {

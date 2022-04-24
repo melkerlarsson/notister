@@ -56,15 +56,23 @@ const Modal = ({
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const onConfirmButtonPressed = async () => {
-		for (const validation of validations) {
-			if (validation.validate()) {
-				setErrorMessage("");
-				setLoading(true);
-				await onButtonPress();
-				onClose();
-				setLoading(false);
-			} else {
-				setErrorMessage(validation.errorMessage);
+		if (validations.length === 0) {
+			setErrorMessage("");
+			setLoading(true);
+			await onButtonPress();
+			onClose();
+			setLoading(false);
+		} else {
+			for (const validation of validations) {
+				if (validation.validate()) {
+					setErrorMessage("");
+					setLoading(true);
+					await onButtonPress();
+					onClose();
+					setLoading(false);
+				} else {
+					setErrorMessage(validation.errorMessage);
+				}
 			}
 		}
 	};

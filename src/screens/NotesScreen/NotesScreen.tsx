@@ -137,8 +137,10 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					sharedWith: [],
 				};
 
-				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
+				await noteAPI.initializeStudyData({ imageUrl: note.imageUrl, userId: user.uid});
 				await updateDoc(currentFolderRef, { notes: [...currentFolderData.notes, note] });
+
+				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
 			};
 
 			await noteAPI.uploadImage({
@@ -165,6 +167,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const onDeleteNote = async (noteId: string) => {
+		console.log("Deleting note");
 		if (!currentFolderRef || !currentFolderData) return;
 		const { error, data } = await noteAPI.deleteNoteAndRemoveFromFolder({ id: noteId, parentFolderRef: currentFolderRef, notes: currentFolderData.notes });
 
