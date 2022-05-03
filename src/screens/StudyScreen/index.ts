@@ -1,3 +1,3 @@
-import StudyScreen from "../StudyScreen";
+import StudyScreen from "./StudyScreen";
 
 export default StudyScreen;
