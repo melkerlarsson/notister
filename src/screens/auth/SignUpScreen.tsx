@@ -25,8 +25,7 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 	const { control, handleSubmit, setError } = useForm<FormData>({ mode: "onChange", resolver: yupResolver(schema) });
 
 	const signUp = ({ email, password }: FormData) => {
-		email = email.trim();
-		email = email.toLowerCase();
+		email = email.trim().toLowerCase();
 		createUserWithEmailAndPassword(auth, email, password)
 			.then(async (userCredential) => {
 				const user = userCredential.user;
