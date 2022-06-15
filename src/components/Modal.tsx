@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { default as RnModal } from "react-native-modal";
 import { COLORS } from "../theme/colors";
 import Button from "./Button";
+import TextButton from "./TextButton";
 
 export interface BaseModalProps {
 	isVisible: boolean;
@@ -105,12 +106,12 @@ const Modal = ({
 					{errorMessage ? <Text>{errorMessage}</Text> : null}
 
 					<View style={styles.buttons}>
-						<Button style={{ ...styles.button, width: 0.3 * modalWidth }} textStyle={styles.buttonTextStyle} onPress={onClose}>
+						<TextButton onPress={onClose}>
 							{buttons.cancel.text}
-						</Button>
-						<Button style={{ ...styles.button, width: 0.3 * modalWidth }} textStyle={styles.buttonTextStyle} onPress={onConfirmButtonPressed}>
+						</TextButton>
+						<TextButton onPress={onConfirmButtonPressed}>
 							{loading && withLoadingIndicator ? <ActivityIndicator size="small" color={COLORS.primary} /> : buttons.confirm.text}
-						</Button>
+						</TextButton>
 					</View>
 				</View>
 			</GestureHandlerRootView>
