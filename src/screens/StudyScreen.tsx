@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 
 interface StudyScreenProps {}
@@ -6,10 +6,22 @@ interface StudyScreenProps {}
 const StudyScreen = ({}: StudyScreenProps) => {
 
 	return (
-		<View>
-			<Text>Study Screen</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>Coming soon...</Text>
 		</View>
 	);
 };
+
+const styles = StyleSheet.create({
+	container: {
+		backgroundColor: "#fff",
+		flex: 1,
+	},
+	text: {
+		fontSize: 42,
+		alignSelf: "center",
+		marginTop: 100
+	}
+});
 
 export default StudyScreen;
