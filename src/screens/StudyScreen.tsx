@@ -1,10 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 
-
 interface StudyScreenProps {}
 
 const StudyScreen = ({}: StudyScreenProps) => {
-
 	return (
 		<View style={styles.container}>
 			<Text style={styles.text}>Coming soon...</Text>
@@ -20,8 +18,8 @@ const styles = StyleSheet.create({
 	text: {
 		fontSize: 42,
 		alignSelf: "center",
-		marginTop: 100
-	}
+		marginTop: 100,
+	},
 });
 
 export default StudyScreen;

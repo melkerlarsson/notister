@@ -11,18 +11,16 @@ interface ButtonProps {
 }
 
 const Button = ({ title, style, textStyle, onPress, inverted, children }: ButtonProps) => {
-
-
 	return (
-		<TouchableOpacity onPress={onPress} style={[styles.button, style, { backgroundColor: inverted ? "#fff" : COLORS.primary, }]} activeOpacity={0.8}>
+		<TouchableOpacity onPress={onPress} style={[styles.button, { backgroundColor: inverted ? "#fff" : COLORS.primary }, style]} activeOpacity={0.8}>
 			{children ? (
 				typeof children === "string" ? (
-					<Text style={[styles.text, textStyle, { color: inverted ? COLORS.primary : "#fff"}]}>{children}</Text>
+					<Text style={[styles.text, { color: inverted ? COLORS.primary : "#fff" }, textStyle]}>{children}</Text>
 				) : (
 					children
 				)
 			) : (
-				<Text style={[styles.text, textStyle, { color: inverted ? COLORS.primary : "#fff"}]}>{title}</Text>
+				<Text style={[styles.text, { color: inverted ? COLORS.primary : "#fff" }, textStyle]}>{title}</Text>
 			)}
 		</TouchableOpacity>
 	);
