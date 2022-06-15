@@ -32,7 +32,6 @@ export const saveReview = async ({ studyData, userId, difficulty }: SaveReviewPr
 	const newInterval = calculateNewReviewInterval(studyData.lastReivewInterval, difficulty);
 
 	// TODO: 	Save to global statististics
-	// TODO: Save date at 00:00
 
 	const newStudyData: StudyData = {
 		...studyData,
