@@ -19,7 +19,7 @@ const calculateNewReviewInterval = (lastInterval: number, difficulty: ReviewDiff
 		lastInterval = 1;
 	}
 	return lastInterval * difficulty;
-}
+};
 
 type SaveReviewProps = {
 	studyData: StudyData;
