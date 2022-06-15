@@ -90,6 +90,3 @@ const styles = StyleSheet.create({
 });
 
 export default StudyScreen;
-function studyDataCollection(uid: string): import("@firebase/firestore").Query<unknown> {
-	throw new Error("Function not implemented.");
-}
