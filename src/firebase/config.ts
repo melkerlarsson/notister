@@ -26,17 +26,19 @@ export const studyDataRef = (userId: string) => ref(storage, `studyData/${userId
 initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
 export const auth = getAuth();
 
-const converter = <T>() => ({
+export const converter = <T>() => ({
 	toFirestore: (data: T) => data,
 	fromFirestore: (snap: QueryDocumentSnapshot) => snap.data() as T,
 });
 
 const DataPoint = <T>(collectionPath: string) => collection(db, collectionPath).withConverter(converter<T>());
 
+export const studyDataCollection = (userId: string) => DataPoint<StudyData>(`studyData/${userId}/normal`); 
+
 export const collections = {
 	folders: DataPoint<Folder>("folders"),
 	rootFolders: DataPoint<RootFolder>("rootFolders"),
-	studyData: DataPoint<{ [key: string]: StudyData }>("studyData"),
+	studyData: (userId: string) => DataPoint<StudyData>(`studyData/${userId}/normal`),
 };
 
 // type PathImpl<T, K extends keyof T> =

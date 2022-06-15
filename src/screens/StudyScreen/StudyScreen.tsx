@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, RefreshControl, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, RefreshControl, Image, ActivityIndicator } from "react-native";
 import ReactNativeZoomableView from "@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView";
 import useData from "../../hooks/useData";
 
 import { ReviewButtons } from "./components";
-import { ButtonType } from "./components/ReviewButtons";
+import { getDocs, query, where } from "firebase/firestore";
+import { collections, } from "../../firebase/config";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/rootReducer";
+import { noteAPI } from "../../firebase";
+import { ReviewDifficulty } from "../../types/review";
 
 interface StudyScreenProps {}
 
-const fakeData = [
-	{ uri: "https://media.collegetimes.com/uploads/2016/12/07170047/studyb.png" },
-	{ uri: "https://data.whicdn.com/images/341323858/original.jpg" },
-	{ uri: "https://data.whicdn.com/images/337761996/original.jpg" },
-	{ uri: "https://data.whicdn.com/images/341164540/original.jpg" },
-];
-
 const StudyScreen = ({}: StudyScreenProps) => {
+	const user = useSelector((state: RootState) => state.userReducer.user);
 	const [index, setIndex] = useState<number | null>(0);
-	const { loading, data, error, reload } = useData({
+	const { loading, data, error, reload } = useData<StudyData[] | null>({
 		loadData: async () => {
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			if (!user) return null;
+			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
 			setIndex(0);
-			return fakeData;
+			return documents.docs.map((d) => d.data());
 		},
 	});
 
@@ -35,40 +35,41 @@ const StudyScreen = ({}: StudyScreenProps) => {
 		}
 	};
 
-	const saveReview = (type: ButtonType) => {};
 
-	const onButtonPress = (type: ButtonType) => {
+	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string) => {
+		const res = await noteAPI.saveReview({ studyData, difficulty, userId})
+	};
+
+	const onButtonPress = (diffuculty: ReviewDifficulty) => {
+		if (data === null || index === null || user === null) return;
+		saveReview(data[index], diffuculty, user.uid);
 		showNextNote();
-		saveReview(type);
 	};
 
 	if (loading) {
-		return <Text>Loading...</Text>
+		return <ActivityIndicator />;
 	}
 
-	return (
-		<View style={styles.container}>
-			{data && index !== null ? (
+	if (data && data.length > 0 && index !== null) {
+		return (
+			<View style={styles.container}>
 				<View style={styles.container}>
-					<ReactNativeZoomableView 
-						key={data[index].uri} 
-						style={styles.imageContainer} 
-						maxZoom={3} minZoom={1} 
-						zoomStep={0.5} 
-						initialZoom={1} 
-						bindToBorders={true} 
-					>
-						<Image source={{ uri: data[index].uri }} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
+					<ReactNativeZoomableView key={data[index].imageUrl} style={styles.imageContainer} maxZoom={3} minZoom={1} zoomStep={0.5} initialZoom={1} bindToBorders={true}>
+						<Image source={{ uri: data[index].imageUrl }} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
 					</ReactNativeZoomableView>
 					<View style={styles.buttonContainer}>
 						<ReviewButtons onPress={onButtonPress} />
 					</View>
 				</View>
-			) : (
-				<ScrollView minimumZoomScale={1} maximumZoomScale={3} contentContainerStyle={styles.container} refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading} />}>
-					<Text>No more notes to review</Text>
-				</ScrollView>
-			)}
+			</View>
+		);
+	}
+
+	return (
+		<View style={styles.container}>
+			<ScrollView minimumZoomScale={1} maximumZoomScale={3} contentContainerStyle={styles.container}  refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading}  />}>
+				<Text>No more notes to review</Text>
+			</ScrollView>
 		</View>
 	);
 };
@@ -89,3 +90,6 @@ const styles = StyleSheet.create({
 });
 
 export default StudyScreen;
+function studyDataCollection(uid: string): import("@firebase/firestore").Query<unknown> {
+	throw new Error("Function not implemented.");
+}

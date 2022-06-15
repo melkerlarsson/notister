@@ -1,8 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { DocumentReference, updateDoc } from "firebase/firestore";
+import { DocumentReference, updateDoc, doc, setDoc, collection, addDoc } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-import { notesStorageRef } from "./config";
+import { collections, db, notesStorageRef } from "./config";
 import { ApiResponse } from "./types";
+import { v4 as createId } from "uuid";
+import { ReviewDifficulty } from "../types/review";
+import { newDateDaysInFuture } from "../util";
 
 const convertImageToBlob = async (url: string): Promise<Blob> => {
 	const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
@@ -11,13 +14,62 @@ const convertImageToBlob = async (url: string): Promise<Blob> => {
 	return response.data;
 };
 
+const calculateNewReviewInterval = (lastInterval: number, difficulty: ReviewDifficulty): number => {
+	if (lastInterval === 0) {
+		lastInterval = 1;
+	}
+	return lastInterval * difficulty;
+}
+
+type SaveReviewProps = {
+	studyData: StudyData;
+	userId: string;
+	difficulty: ReviewDifficulty;
+};
+
+export const saveReview = async ({ studyData, userId, difficulty }: SaveReviewProps): Promise<ApiResponse<null>> => {
+	const reviewDate = new Date(Date.now());
+	const newInterval = calculateNewReviewInterval(studyData.lastReivewInterval, difficulty);
+
+	// TODO: 	Save to global statististics
+	// TODO: Save date at 00:00
+
+	const newStudyData: StudyData = {
+		...studyData,
+		lastReivewInterval: newInterval,
+		reviewDates: [...studyData.reviewDates, reviewDate],
+		reviewDate: newDateDaysInFuture(newInterval),
+	};
+
+	try {
+		await updateDoc(doc(collections.studyData(userId), studyData.id), newStudyData);
+		return { error: null, data: null };
+	} catch (error) {
+		return { error: { title: "Error", description: "Error saving review. Please try again." }, data: null };
+	}
+};
+
 type InitializeStudyDataProps = {
 	imageUrl: string;
 	userId: string;
 };
 
-export const InitializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps) => {
-	
+export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps): Promise<ApiResponse<null>> => {
+	const id = createId();
+	const studyData: StudyData = {
+		id,
+		imageUrl,
+		reviewDate: new Date(Date.now()),
+		lastReivewInterval: 0,
+		reviewDates: [],
+	};
+
+	try {
+		await setDoc(doc(db, `studyData/${userId}/normal/${id}`), studyData);
+		return { data: null, error: null };
+	} catch (error) {
+		return { data: null, error: { title: "Error", description: "Error initializing review data. Please try again." } };
+	}
 };
 
 type UploadImageProps = {

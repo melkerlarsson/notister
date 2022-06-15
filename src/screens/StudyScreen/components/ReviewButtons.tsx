@@ -1,19 +1,18 @@
 import { View, StyleSheet } from "react-native";
 import Button from "../../../components/Button";
-
-export type ButtonType = "impossible" | "difficult" | "okay" | "easy";
+import { ReviewDifficulty } from "../../../types/review";
 
 interface ReviewButtonsProps {
-	onPress: (type: ButtonType) => void;
+	onPress: (type: ReviewDifficulty) => void;
 }
 
 const ReviewButtons = ({ onPress }: ReviewButtonsProps) => {
 	return (
 		<View style={styles.container}>
-			<Button style={[styles.button, styles.button, styles.button1]} title="Impossible" onPress={() => onPress("impossible")} />
-			<Button style={[styles.button, styles.button, styles.button2]} title="Difficult" onPress={() => onPress("difficult")} />
-			<Button style={[styles.button, styles.button, styles.button3]} title="Okay" onPress={() => onPress("okay")} />
-			<Button style={[styles.button, styles.button, styles.button4]} title="Easy" onPress={() => onPress("easy")} />
+			<Button style={[styles.button, styles.button, styles.button1]} title="Impossible" onPress={() => onPress(ReviewDifficulty.Impossible)} />
+			<Button style={[styles.button, styles.button, styles.button2]} title="Difficult" onPress={() => onPress(ReviewDifficulty.Difficult)} />
+			<Button style={[styles.button, styles.button, styles.button3]} title="Okay" onPress={() => onPress(ReviewDifficulty.Okay)} />
+			<Button style={[styles.button, styles.button, styles.button4]} title="Easy" onPress={() => onPress(ReviewDifficulty.Easy)} />
 		</View>
 	);
 };
