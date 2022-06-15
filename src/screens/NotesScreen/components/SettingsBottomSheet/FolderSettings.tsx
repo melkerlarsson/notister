@@ -91,7 +91,7 @@ const FolderSettings = ({ open, onClose, folder, onDeleteFolder, onUpdateFolder,
 						</View>
 						<Divider />
 
-						<MenuOption text="Share" icon={<Ionicons name="person-add-outline" size={24} />} onPress={onShareModalButtonPressed} />
+						<MenuOption text="Share" icon={<Ionicons name="person-add-outline" size={24} />} disabled onPress={onShareModalButtonPressed} />
 						<MenuOption text="Update Name" icon={<Ionicons name="pencil-sharp" size={24} />} onPress={onUpdateNameButtonPressed} />
 						<MenuOption text="Color" icon={<Ionicons name="md-color-palette-outline" size={24} />} onPress={onColorButtonPressed} />
 						<MenuOption text="Delete" textColor={COLORS.error} icon={<Ionicons name="trash-outline" size={24} color={COLORS.error} />} onPress={onDeleteButtonPressed} />
