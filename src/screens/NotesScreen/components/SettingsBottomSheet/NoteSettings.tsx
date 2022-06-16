@@ -15,7 +15,7 @@ interface NoteSettingsProps {
 	open: boolean;
 	onClose: () => void;
 	note: Note;
-	onDeleteNote: (noteId: string) => Promise<void>;
+	onDeleteNote: (noteId: string, studyDataId: string) => Promise<void>;
 	onRenameNote: (noteId: string, name: string) => Promise<void>;
 }
 
@@ -48,7 +48,7 @@ const NoteSettings = ({ open, onClose, note, onDeleteNote, onRenameNote }: NoteS
 
 	const deleteNote = async () => {
 		console.log("Deleting note");
-		await onDeleteNote(note.id);
+		await onDeleteNote(note.id, note.studyDataId);
 		setIsConfimationModalVisible(false);
 	};
 

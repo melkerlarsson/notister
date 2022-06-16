@@ -1,6 +1,7 @@
 import { DocumentReference, doc, updateDoc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { deleteObject } from "firebase/storage";
 import { v4 as createId } from "uuid";
+import { deleteNoteReviewData } from "./note";
 import { DEFAULT_FOLDER_COLOR } from "../theme/colors";
 import { collections, notesStorageRef } from "./config";
 import { ApiResponse, ErrorMessage } from "./types";
@@ -60,29 +61,30 @@ type DeleteFolderProps = {
 	folderId: string;
 	parentFolderRef: DocumentReference<RootFolder | Folder>;
 	parentSubFolders: SubFolder[];
+	userId: string;
 };
 
-export const deleteFolder = async ({ folderId, parentFolderRef, parentSubFolders }: DeleteFolderProps): Promise<SubFolder[]> => {
+export const deleteFolder = async ({ userId, folderId, parentFolderRef, parentSubFolders }: DeleteFolderProps): Promise<SubFolder[]> => {
 	const newSubFolders = [...parentSubFolders.filter((subFolder) => subFolder.id !== folderId)];
 
-	await Promise.all([updateDoc(parentFolderRef, { subFolders: newSubFolders }), deleteFolderDataRecursively(folderId)]);
+	await Promise.all([updateDoc(parentFolderRef, { subFolders: newSubFolders }), deleteFolderDataRecursively(folderId, userId)]);
 
 	return newSubFolders;
 };
 
-const deleteFolderDataRecursively = async (folderId: string) => {
+const deleteFolderDataRecursively = async (folderId: string, userId: string) => {
 	const folderRef = doc(collections.folders, folderId);
 	const folderData = (await getDoc(folderRef)).data();
 
 	if (folderData) {
 		for (const note of folderData.notes) {
-			// TODO: Remove study data from note
+			await deleteNoteReviewData(userId, note.studyDataId);
 			const imageRef = notesStorageRef(note.id);
 			await deleteObject(imageRef);
 		}
 
 		for (const folder of folderData.subFolders) {
-			await deleteFolderDataRecursively(folder.id);
+			await deleteFolderDataRecursively(folder.id, userId);
 		}
 	}
 

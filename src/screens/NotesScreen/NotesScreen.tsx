@@ -96,9 +96,9 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const onDeleteFolder = async (folderId: string): Promise<void> => {
-		if (currentFolderRef && currentFolderData) {
+		if (currentFolderRef && currentFolderData && user !== null) {
 			try {
-				const newSubFolders: SubFolder[] = await folderAPI.deleteFolder({ folderId, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
+				const newSubFolders: SubFolder[] = await folderAPI.deleteFolder({ userId: user.uid, folderId, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 				setCurrentFolderData({ ...currentFolderData, subFolders: newSubFolders });
 			} catch (error) {
 				Toast.show({ title: "Error", description: "An error occurred while deleting folder. Please try again", type: "error" });
@@ -129,15 +129,19 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			const noteId = createUuid();
 
 			const onUploaded = async (imageUrl: string) => {
+
+				const studyDataId = await noteAPI.initializeStudyData({ imageUrl: imageUrl, userId: user.uid });
+
+
 				const note: Note = {
 					id: noteId,
 					imageUrl: imageUrl,
 					name: result.name,
 					userId: user.uid,
 					sharedWith: [],
+					studyDataId
 				};
 
-				await noteAPI.initializeStudyData({ imageUrl: imageUrl, userId: user.uid });
 				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
 				await updateDoc(currentFolderRef, { notes: [...currentFolderData.notes, note] });
 
@@ -167,10 +171,10 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		}
 	};
 
-	const onDeleteNote = async (noteId: string) => {
+	const onDeleteNote = async (noteId: string, studyDataId: string) => {
 		console.log("Deleting note");
-		if (!currentFolderRef || !currentFolderData) return;
-		const { error, data } = await noteAPI.deleteNoteAndRemoveFromFolder({ id: noteId, parentFolderRef: currentFolderRef, notes: currentFolderData.notes });
+		if (!currentFolderRef || !currentFolderData || user === null) return;
+		const { error, data } = await noteAPI.deleteNoteAndRemoveFromFolder({ userId: user.uid, id: noteId, studyDataId, parentFolderRef: currentFolderRef, notes: currentFolderData.notes });
 
 		if (error) {
 			Toast.show({ type: "error", title: error.title, description: error.description });

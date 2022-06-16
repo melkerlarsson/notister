@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { DocumentReference, updateDoc, doc, setDoc, } from "firebase/firestore";
+import { DocumentReference, updateDoc, doc, setDoc, deleteDoc, } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { collections, db, notesStorageRef } from "./config";
 import { ApiResponse } from "./types";
@@ -46,7 +46,7 @@ type InitializeStudyDataProps = {
 	userId: string;
 };
 
-export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps): Promise<ApiResponse<null>> => {
+export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps): Promise<string> => {
 	const id = createId();
 	const studyData: StudyData = {
 		id,
@@ -56,12 +56,9 @@ export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyD
 		reviewDates: [],
 	};
 
-	try {
-		await setDoc(doc(db, `studyData/${userId}/normal/${id}`), studyData);
-		return { data: null, error: null };
-	} catch (error) {
-		return { data: null, error: { title: "Error", description: "Error initializing review data. Please try again." } };
-	}
+	await setDoc(doc(db, `studyData/${userId}/normal/${id}`), studyData);
+	return id;
+
 };
 
 type UploadImageProps = {
@@ -99,16 +96,18 @@ export const uploadImage = async ({ url, id, onUploaded, onProgressChanged, onEr
 };
 
 type DelteNoteProps = {
+	userId: string;
 	id: string;
+	studyDataId: string;
 	parentFolderRef: DocumentReference<RootFolder | Folder>;
 	notes: Note[];
 };
 
-export const deleteNoteAndRemoveFromFolder = async ({ id, parentFolderRef, notes }: DelteNoteProps): Promise<ApiResponse<Note[]>> => {
-	// TODO: Delete learning data?
+export const deleteNoteAndRemoveFromFolder = async ({ userId, id, studyDataId, parentFolderRef, notes }: DelteNoteProps): Promise<ApiResponse<Note[]>> => {
 
 	try {
 		await deleteNote(id);
+		await deleteNoteReviewData(userId, studyDataId);
 
 		const newNotes = notes.filter((note) => note.id !== id);
 		await updateDoc(parentFolderRef, { notes: newNotes });
@@ -117,6 +116,11 @@ export const deleteNoteAndRemoveFromFolder = async ({ id, parentFolderRef, notes
 	} catch (error) {
 		return { error: { title: "Error", description: "Error deleting note. Please try again" }, data: null };
 	}
+};
+
+export const deleteNoteReviewData = async (userId: string, studyDataId: string) => {
+	const ref = doc(collections.studyData(userId), studyDataId);
+	await deleteDoc(ref);
 };
 
 const deleteNote = async (id: string): Promise<void> => {

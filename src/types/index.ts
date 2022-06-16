@@ -33,6 +33,7 @@ type Note = {
   userId: string;
   sharedWith: SharedUser[];
   name: string;
+  studyDataId: string;
 };
 
 type SharedUser = {
