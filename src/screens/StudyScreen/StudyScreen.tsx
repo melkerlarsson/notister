@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Image, ActivityIndicator } from "react-native";
 import ReactNativeZoomableView from "@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView";
 import useData from "../../hooks/useData";
 
 import { ReviewButtons } from "./components";
 import { getDocs, query, where } from "firebase/firestore";
-import { collections, } from "../../firebase/config";
+import { collections } from "../../firebase/config";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 import { noteAPI } from "../../firebase";
@@ -35,14 +35,13 @@ const StudyScreen = ({}: StudyScreenProps) => {
 		}
 	};
 
-
 	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string) => {
-		const res = await noteAPI.saveReview({ studyData, difficulty, userId})
+		const res = await noteAPI.saveReview({ studyData, difficulty, userId });
 	};
 
 	const onButtonPress = (diffuculty: ReviewDifficulty) => {
 		if (data === null || index === null || user === null) return;
-		saveReview(data[index], diffuculty, user.uid);
+		void saveReview(data[index], diffuculty, user.uid);
 		showNextNote();
 	};
 
@@ -67,7 +66,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView minimumZoomScale={1} maximumZoomScale={3} contentContainerStyle={styles.container}  refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading}  />}>
+			<ScrollView minimumZoomScale={1} maximumZoomScale={3} contentContainerStyle={styles.container} refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading} />}>
 				<Text>No more notes to review</Text>
 			</ScrollView>
 		</View>

@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { DocumentReference, updateDoc, doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { DocumentReference, updateDoc, doc, setDoc, } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { collections, db, notesStorageRef } from "./config";
 import { ApiResponse } from "./types";
