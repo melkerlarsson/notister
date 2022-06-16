@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Image, ActivityIndicator } from "react-native";
 import ReactNativeZoomableView from "@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView";
 import useData from "../../hooks/useData";
@@ -10,54 +10,65 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 import { noteAPI } from "../../firebase";
 import { ReviewDifficulty } from "../../types/review";
+import { Toast } from "../../components";
+import { calculateNewReviewInterval } from "../../util";
 
 interface StudyScreenProps {}
 
 const StudyScreen = ({}: StudyScreenProps) => {
 	const user = useSelector((state: RootState) => state.userReducer.user);
-	const [index, setIndex] = useState<number | null>(0);
-	const { loading, data, error, reload } = useData<StudyData[] | null>({
+	const { loading, data, error, reload, setData } = useData<StudyData[] | null>({
 		loadData: async () => {
 			if (!user) return null;
-			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
-			setIndex(0);
+			const documents = await getDocs(query(collections.studyData(user.uid)));
 			return documents.docs.map((d) => d.data());
 		},
 	});
 
-	const showNextNote = () => {
-		if (data && index === data.length - 1) {
-			setIndex(null);
-		} else {
-			if (index !== null) {
-				setIndex(index + 1);
-			}
+	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string) => {
+		const res = await noteAPI.saveReview({ studyData, difficulty, userId });
+
+		if (res.error) {
+			Toast.show({ title: res.error.title, description: res.error.description, type: "error" });
 		}
 	};
 
-	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string) => {
-		const res = await noteAPI.saveReview({ studyData, difficulty, userId });
-	};
+	const onButtonPress = async (difficulty: ReviewDifficulty) => {
+		if (data === null || user === null || data.length === 0) return;
+		await saveReview(data[0], difficulty, user.uid);
 
-	const onButtonPress = (diffuculty: ReviewDifficulty) => {
-		if (data === null || index === null || user === null) return;
-		void saveReview(data[index], diffuculty, user.uid);
-		showNextNote();
+		const firstElement = data[0];
+
+		console.log(difficulty);
+
+		if (difficulty === ReviewDifficulty.Impossible) {
+			data.push(firstElement);
+		}
+
+		setData(data.splice(1, data.length));
 	};
 
 	if (loading) {
 		return <ActivityIndicator />;
 	}
 
-	if (data && data.length > 0 && index !== null) {
+	if (data && data.length > 0) {
 		return (
 			<View style={styles.container}>
 				<View style={styles.container}>
-					<ReactNativeZoomableView key={data[index].imageUrl} style={styles.imageContainer} maxZoom={3} minZoom={1} zoomStep={0.5} initialZoom={1} bindToBorders={true}>
-						<Image source={{ uri: data[index].imageUrl }} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
+					<ReactNativeZoomableView key={data[0].imageUrl} style={styles.imageContainer} maxZoom={3} minZoom={1} zoomStep={0.5} initialZoom={1} bindToBorders={true}>
+						<Image source={{ uri: data[0].imageUrl }} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
 					</ReactNativeZoomableView>
 					<View style={styles.buttonContainer}>
-						<ReviewButtons onPress={onButtonPress} />
+						<ReviewButtons
+							onPress={onButtonPress}
+							daysUntilNextReview={{
+								impossible: calculateNewReviewInterval(data[0].lastReivewInterval, ReviewDifficulty.Impossible),
+								difficult: calculateNewReviewInterval(data[0].lastReivewInterval, ReviewDifficulty.Difficult),
+								okay: calculateNewReviewInterval(data[0].lastReivewInterval, ReviewDifficulty.Okay),
+								easy: calculateNewReviewInterval(data[0].lastReivewInterval, ReviewDifficulty.Easy),
+							}}
+						/>
 					</View>
 				</View>
 			</View>

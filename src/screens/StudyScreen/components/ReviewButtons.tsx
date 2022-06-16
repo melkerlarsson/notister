@@ -1,18 +1,44 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import Button from "../../../components/Button";
 import { ReviewDifficulty } from "../../../types/review";
 
 interface ReviewButtonsProps {
 	onPress: (type: ReviewDifficulty) => void;
+	daysUntilNextReview: {
+		impossible: number;
+		difficult: number;
+		okay: number;
+		easy: number;
+	};
 }
 
-const ReviewButtons = ({ onPress }: ReviewButtonsProps) => {
+const ReviewButtons = ({ onPress, daysUntilNextReview }: ReviewButtonsProps) => {
 	return (
 		<View style={styles.container}>
-			<Button style={[styles.button, styles.button, styles.button1]} title="Impossible" onPress={() => onPress(ReviewDifficulty.Impossible)} />
-			<Button style={[styles.button, styles.button, styles.button2]} title="Difficult" onPress={() => onPress(ReviewDifficulty.Difficult)} />
-			<Button style={[styles.button, styles.button, styles.button3]} title="Okay" onPress={() => onPress(ReviewDifficulty.Okay)} />
-			<Button style={[styles.button, styles.button, styles.button4]} title="Easy" onPress={() => onPress(ReviewDifficulty.Easy)} />
+			<Button style={[styles.button, styles.button, styles.button1]} onPress={() => onPress(ReviewDifficulty.Impossible)}>
+				<>
+					<Text style={[styles.text, styles.difficulty]}>Impossible</Text>
+					<Text style={styles.text}>{`In ${daysUntilNextReview.impossible} day`}</Text>
+				</>
+			</Button>
+			<Button style={[styles.button, styles.button, styles.button2]} onPress={() => onPress(ReviewDifficulty.Difficult)}>
+				<>
+					<Text style={[styles.text, styles.difficulty]}>Difficult</Text>
+					<Text style={styles.text}>{`In ${daysUntilNextReview.difficult} days`}</Text>
+				</>
+			</Button>
+			<Button style={[styles.button, styles.button, styles.button3]} onPress={() => onPress(ReviewDifficulty.Okay)}>
+				<>
+					<Text style={[styles.text, styles.difficulty]}>Okay</Text>
+					<Text style={styles.text}>{`In ${daysUntilNextReview.okay} days`}</Text>
+				</>
+			</Button>
+			<Button style={[styles.button, styles.button, styles.button4]} onPress={() => onPress(ReviewDifficulty.Easy)}>
+				<>
+					<Text style={[styles.text, styles.difficulty]}>Easy</Text>
+					<Text style={styles.text}>{`In ${daysUntilNextReview.easy} days`}</Text>
+				</>
+			</Button>
 		</View>
 	);
 };
@@ -42,6 +68,12 @@ const styles = StyleSheet.create({
 	button4: {
 		backgroundColor: "#58d025",
 	},
+	text: {
+		color: "#fff",
+	},
+	difficulty: {
+		fontWeight: "bold",
+	}
 });
 
 export default ReviewButtons;

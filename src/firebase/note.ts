@@ -5,20 +5,13 @@ import { collections, db, notesStorageRef } from "./config";
 import { ApiResponse } from "./types";
 import { v4 as createId } from "uuid";
 import { ReviewDifficulty } from "../types/review";
-import { newDateDaysInFuture } from "../util";
+import { calculateNewReviewInterval, newDateDaysInFuture } from "../util";
 
 const convertImageToBlob = async (url: string): Promise<Blob> => {
 	const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
 	const response: AxiosResponse<Blob> = await axios.request(config);
 
 	return response.data;
-};
-
-const calculateNewReviewInterval = (lastInterval: number, difficulty: ReviewDifficulty): number => {
-	if (lastInterval === 0) {
-		lastInterval = 1;
-	}
-	return lastInterval * difficulty;
 };
 
 type SaveReviewProps = {
