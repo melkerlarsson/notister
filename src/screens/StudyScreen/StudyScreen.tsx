@@ -38,8 +38,6 @@ const StudyScreen = ({}: StudyScreenProps) => {
 
 		const firstElement = data[0];
 
-		console.log(difficulty);
-
 		if (difficulty === ReviewDifficulty.Impossible) {
 			data.push(firstElement);
 		}

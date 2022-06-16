@@ -21,9 +21,6 @@ const useData = <T,>({ loadData }: UseDataProps<T>) => {
 		void fetchData();
 	}, []);
 	
-	
-	useEffect(() => console.log("Data being updated"), [data]);
-
 	return { data, loading, reload, error, setData };
 };
 
