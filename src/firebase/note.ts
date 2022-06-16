@@ -1,9 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { addDoc, doc, DocumentReference, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentReference, updateDoc, doc, setDoc, } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-import { collections, notesStorageRef, studyDataCollection } from "./config";
+import { collections, db, notesStorageRef } from "./config";
 import { ApiResponse } from "./types";
 import { v4 as createId } from "uuid";
+import { ReviewDifficulty } from "../types/review";
+import { calculateNewReviewInterval, newDateDaysInFuture } from "../util";
 
 const convertImageToBlob = async (url: string): Promise<Blob> => {
 	const config: AxiosRequestConfig = { url: url, method: "GET", responseType: "blob" };
@@ -12,29 +14,53 @@ const convertImageToBlob = async (url: string): Promise<Blob> => {
 	return response.data;
 };
 
+type SaveReviewProps = {
+	studyData: StudyData;
+	userId: string;
+	difficulty: ReviewDifficulty;
+};
+
+export const saveReview = async ({ studyData, userId, difficulty }: SaveReviewProps): Promise<ApiResponse<null>> => {
+	const reviewDate = new Date(Date.now());
+	const newInterval = calculateNewReviewInterval(studyData.lastReivewInterval, difficulty);
+
+	// TODO: 	Save to global statististics
+
+	const newStudyData: StudyData = {
+		...studyData,
+		lastReivewInterval: newInterval,
+		reviewDates: [...studyData.reviewDates, reviewDate],
+		reviewDate: newDateDaysInFuture(newInterval),
+	};
+
+	try {
+		await updateDoc(doc(collections.studyData(userId), studyData.id), newStudyData);
+		return { error: null, data: null };
+	} catch (error) {
+		return { error: { title: "Error", description: "Error saving review. Please try again." }, data: null };
+	}
+};
+
 type InitializeStudyDataProps = {
 	imageUrl: string;
 	userId: string;
 };
 
-export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps) => {
+export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyDataProps): Promise<ApiResponse<null>> => {
 	const id = createId();
 	const studyData: StudyData = {
-		id: id,
-		imageUrl: imageUrl,
+		id,
+		imageUrl,
 		reviewDate: new Date(Date.now()),
 		lastReivewInterval: 0,
 		reviewDates: [],
 	};
 
 	try {
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		await setDoc(doc(studyDataCollection(userId, id)), studyData);
-
-		return null;
+		await setDoc(doc(db, `studyData/${userId}/normal/${id}`), studyData);
+		return { data: null, error: null };
 	} catch (error) {
-		return { title: "Error", description: "Error creating root folder. Please try again." };
+		return { data: null, error: { title: "Error", description: "Error initializing review data. Please try again." } };
 	}
 };
 

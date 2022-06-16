@@ -137,7 +137,8 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					sharedWith: [],
 				};
 
-				await noteAPI.initializeStudyData({ imageUrl: note.imageUrl, userId: user.uid});
+				await noteAPI.initializeStudyData({ imageUrl: imageUrl, userId: user.uid });
+				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
 				await updateDoc(currentFolderRef, { notes: [...currentFolderData.notes, note] });
 
 				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });

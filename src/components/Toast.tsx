@@ -1,5 +1,5 @@
 import { ViewStyle } from "react-native";
-import { default as ToastMessage, ToastConfig, BaseToast } from "react-native-toast-message";
+import { default as ToastMessage, ToastConfig, BaseToast, ToastPosition } from "react-native-toast-message";
 import { COLORS } from "../theme/colors";
 
 const commonToastStyle: ViewStyle = {
@@ -23,10 +23,11 @@ type ShowProps = {
 	description: string;
 	type?: type;
 	duration?: number;
+	position?: ToastPosition;
 };
 
-const show = ({ title, description, type = "success", duration = 3000 }: ShowProps) => {
-	ToastMessage.show({ text1: title, text2: description, type, position: "bottom", autoHide: type !== "error", visibilityTime: duration });
+const show = ({ title, description, type = "success", duration = 3000, position = "bottom" }: ShowProps) => {
+	ToastMessage.show({ text1: title, text2: description, type, position, autoHide: type !== "error", visibilityTime: duration });
 };
 
 const hide = () => ToastMessage.hide();

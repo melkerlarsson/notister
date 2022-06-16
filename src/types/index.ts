@@ -52,6 +52,7 @@ type StudyData = {
   reviewDates: Date[];
 };
 
+
 type Only<T, U> = {
 	[P in keyof T]: T[P];
 } & {
