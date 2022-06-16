@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Image, ActivityIndicator } from "react-native";
 import ReactNativeZoomableView from "@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView";
 import useData from "../../hooks/useData";
@@ -20,7 +19,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 	const { loading, data, error, reload, setData } = useData<StudyData[] | null>({
 		loadData: async () => {
 			if (!user) return null;
-			const documents = await getDocs(query(collections.studyData(user.uid)));
+			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
 			return documents.docs.map((d) => d.data());
 		},
 	});
