@@ -37,8 +37,6 @@ const SignInScreen = ({ navigation }: SignInScreenProps) => {
 			.then((userCredential) => {
 				const user = userCredential.user;
 
-				console.log(user.email);
-
 				if (!user.emailVerified) {
 					Toast.show({ type: "error", title: "Error signing in", description: "Please verify your email before signing in" });
 				} else {
