@@ -10,9 +10,13 @@ const useData = <T,>({ loadData }: UseDataProps<T>) => {
 	const [error, setError] = useState<string | null>(null);
 
 	const fetchData = async () => {
-		setLoading(true);
-		setData(await loadData());
-		setLoading(false);
+		try {
+			setLoading(true);
+			setData(await loadData());
+			setLoading(false);
+		} catch (error) {
+			setError("Error loading data");
+		}
 	};
 
 	const reload = () => fetchData();
@@ -20,7 +24,7 @@ const useData = <T,>({ loadData }: UseDataProps<T>) => {
 	useEffect(() => {
 		void fetchData();
 	}, []);
-	
+
 	return { data, loading, reload, error, setData };
 };
 
