@@ -11,6 +11,7 @@ import { noteAPI } from "../../firebase";
 import { ReviewDifficulty } from "../../types/review";
 import { Toast } from "../../components";
 import { calculateNewReviewInterval } from "../../util";
+import { COLORS } from "../../theme/colors";
 
 interface StudyScreenProps {}
 
@@ -45,8 +46,23 @@ const StudyScreen = ({}: StudyScreenProps) => {
 		setData(data.splice(1, data.length));
 	};
 
+	if (error) {
+		return (
+			<ScrollView
+				contentContainerStyle={[styles.container, { justifyContent: "center", alignItems: "center" }]}
+				refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading} />}
+			>
+				<Text style={{ fontSize: 24 }}>Error loading reviews. Scroll down to refresh.</Text>
+			</ScrollView>
+		);
+	}
+
 	if (loading) {
-		return <ActivityIndicator />;
+		return (
+			<View style={[styles.container, { justifyContent: "center" }]}>
+				<ActivityIndicator size="large" color={COLORS.primary} />
+			</View>
+		);
 	}
 
 	if (data && data.length > 0) {
@@ -73,11 +89,13 @@ const StudyScreen = ({}: StudyScreenProps) => {
 	}
 
 	return (
-		<View style={styles.container}>
-			<ScrollView minimumZoomScale={1} maximumZoomScale={3} contentContainerStyle={styles.container} refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading} />}>
-				<Text>No more notes to review</Text>
-			</ScrollView>
-		</View>
+		<ScrollView
+			contentContainerStyle={[styles.container, { justifyContent: "center", alignItems: "center" }]}
+			refreshControl={<RefreshControl enabled={true} onRefresh={reload} refreshing={loading} />}
+		>
+			<Text style={{ fontSize: 24 }}>No more notes to review today</Text>
+			<Text style={{ fontSize: 14 }}>Scroll down to refresh</Text>
+		</ScrollView>
 	);
 };
 
