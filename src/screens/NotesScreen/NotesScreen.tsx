@@ -127,7 +127,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			const currentNumberOfNotes = await noteAPI.getNumberOfNotes(user.uid);
 			
 			if (currentNumberOfNotes >= MAX_NUMBER_OF_NOTES) {
-				Toast.show({ title: "Could not add note", description: `You already have reached the maximum number of notes (${MAX_NUMBER_OF_NOTES}`, type: "error" });
+				Toast.show({ title: "Could not add note", description: `You already have reached the maximum number of notes (${MAX_NUMBER_OF_NOTES})`, type: "error" , duration: 2000});
 				return;
 			}
 
