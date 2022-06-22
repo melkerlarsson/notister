@@ -12,15 +12,17 @@ import { ReviewDifficulty } from "../../types/review";
 import { Toast } from "../../components";
 import { calculateNewReviewInterval } from "../../util";
 import { COLORS } from "../../theme/colors";
+import { useState } from "react";
 
 interface StudyScreenProps {}
 
 const StudyScreen = ({}: StudyScreenProps) => {
 	const user = useSelector((state: RootState) => state.userReducer.user);
+	const [savingReview, setSavingReview] = useState(false);
 	const { loading, data, error, reload, setData } = useData<StudyData[] | null>({
 		loadData: async () => {
 			if (!user) return null;
-			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
+			const documents = await getDocs(query(collections.studyData(user.uid)));
 
 			return documents.docs.map((d) => d.data());
 		},
@@ -40,6 +42,8 @@ const StudyScreen = ({}: StudyScreenProps) => {
 
 	const onButtonPress = async (difficulty: ReviewDifficulty) => {
 		if (data === null || user === null || data.length === 0) return;
+
+		setSavingReview(true);
 		const newStudyData = await saveReview(data[0], difficulty, user.uid);
 
 
@@ -48,6 +52,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 		}
 
 		setData(data.splice(1, data.length));
+		setSavingReview(false);
 	};
 
 	if (error) {
@@ -78,6 +83,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 					</ReactNativeZoomableView>
 					<View style={styles.buttonContainer}>
 						<ReviewButtons
+							disabled={savingReview}
 							onPress={onButtonPress}
 							daysUntilNextReview={{
 								impossible: calculateNewReviewInterval(data[0].lastReivewInterval, ReviewDifficulty.Impossible),
@@ -87,6 +93,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 							}}
 						/>
 					</View>
+					{ savingReview && <ActivityIndicator size="large" style={{ position: "absolute", alignSelf: "center", top: "40%"}} color={"#000"}/> }
 				</View>
 			</View>
 		);

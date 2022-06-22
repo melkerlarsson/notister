@@ -10,30 +10,31 @@ interface ReviewButtonsProps {
 		okay: number;
 		easy: number;
 	};
+	disabled: boolean;
 }
 
-const ReviewButtons = ({ onPress, daysUntilNextReview }: ReviewButtonsProps) => {
+const ReviewButtons = ({ onPress, disabled, daysUntilNextReview }: ReviewButtonsProps) => {
 	return (
-		<View style={styles.container}>
-			<Button style={[styles.button, styles.button, styles.button1]} onPress={() => onPress(ReviewDifficulty.Impossible)}>
+		<View style={[styles.container]}>
+			<Button style={[styles.button, styles.button, styles.button1]} disabled={disabled} onPress={() => onPress(ReviewDifficulty.Impossible)}>
 				<>
 					<Text style={[styles.text, styles.difficulty]}>Impossible</Text>
 					<Text style={styles.text}>{`In ${daysUntilNextReview.impossible} day`}</Text>
 				</>
 			</Button>
-			<Button style={[styles.button, styles.button, styles.button2]} onPress={() => onPress(ReviewDifficulty.Difficult)}>
+			<Button style={[styles.button, styles.button, styles.button2]} disabled={disabled} onPress={() => onPress(ReviewDifficulty.Difficult)}>
 				<>
 					<Text style={[styles.text, styles.difficulty]}>Difficult</Text>
 					<Text style={styles.text}>{`In ${daysUntilNextReview.difficult} days`}</Text>
 				</>
 			</Button>
-			<Button style={[styles.button, styles.button, styles.button3]} onPress={() => onPress(ReviewDifficulty.Okay)}>
+			<Button style={[styles.button, styles.button, styles.button3]} disabled={disabled} onPress={() => onPress(ReviewDifficulty.Okay)}>
 				<>
 					<Text style={[styles.text, styles.difficulty]}>Okay</Text>
 					<Text style={styles.text}>{`In ${daysUntilNextReview.okay} days`}</Text>
 				</>
 			</Button>
-			<Button style={[styles.button, styles.button, styles.button4]} onPress={() => onPress(ReviewDifficulty.Easy)}>
+			<Button style={[styles.button, styles.button, styles.button4]} disabled={disabled} onPress={() => onPress(ReviewDifficulty.Easy)}>
 				<>
 					<Text style={[styles.text, styles.difficulty]}>Easy</Text>
 					<Text style={styles.text}>{`In ${daysUntilNextReview.easy} days`}</Text>
