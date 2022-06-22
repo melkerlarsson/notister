@@ -181,7 +181,6 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	};
 
 	const onDeleteNote = async (noteId: string, studyDataId: string) => {
-		console.log("Deleting note");
 		if (!currentFolderRef || !currentFolderData || user === null) return;
 		const { error, data } = await noteAPI.deleteNoteAndRemoveFromFolder({ userId: user.uid, id: noteId, studyDataId, parentFolderRef: currentFolderRef, notes: currentFolderData.notes });
 
