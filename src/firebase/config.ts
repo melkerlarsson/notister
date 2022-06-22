@@ -36,6 +36,7 @@ export const collections = {
 	folders: DataPoint<Folder>("folders"),
 	rootFolders: DataPoint<RootFolder>("rootFolders"),
 	studyData: (userId: string) => DataPoint<StudyData>(`studyData/${userId}/normal`),
+	userData: DataPoint<UserData>("userData")
 };
 
 // type PathImpl<T, K extends keyof T> =

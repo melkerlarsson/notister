@@ -5,9 +5,11 @@ import { object, SchemaOf, string } from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SignUpScreenNavigationProps } from "../../navigation/AuthStack";
-import { auth } from "../../firebase/config";
+import { auth, collections } from "../../firebase/config";
 import { folderAPI } from "../../firebase";
 import { Toast, CustomInput, Divider } from "../../components";
+import { setDoc, doc } from "firebase/firestore";
+import { initializeUserData } from "../../firebase/user";
 
 type SignUpScreenProps = SignUpScreenNavigationProps;
 
@@ -31,6 +33,7 @@ const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
 				const user = userCredential.user;
 				void sendEmailVerification(user);
 				const error = await folderAPI.createRootFolder(user.uid);
+				await initializeUserData(user.uid);
 
 				if (error) {
 					Toast.show({ type: "error", title: error.title, description: error.description });

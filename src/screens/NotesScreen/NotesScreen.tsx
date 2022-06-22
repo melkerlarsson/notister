@@ -20,6 +20,7 @@ import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
 import NoteSettings from "./components/SettingsBottomSheet/NoteSettings";
+import { MAX_NUMBER_OF_NOTES } from "../../constants";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -121,7 +122,15 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const onAddNote = async () => {
 		if (!user || !currentFolderData || !currentFolderRef) return;
 
+
 		try {
+			const currentNumberOfNotes = await noteAPI.getNumberOfNotes(user.uid);
+			
+			if (currentNumberOfNotes >= MAX_NUMBER_OF_NOTES) {
+				Toast.show({ title: "Could not add note", description: `You already have reached the maximum number of notes (${MAX_NUMBER_OF_NOTES}`, type: "error" });
+				return;
+			}
+
 			const result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
 
 			if (result.type === "cancel") return;
@@ -129,9 +138,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			const noteId = createUuid();
 
 			const onUploaded = async (imageUrl: string) => {
-
 				const studyDataId = await noteAPI.initializeStudyData({ imageUrl: imageUrl, userId: user.uid });
-
 
 				const note: Note = {
 					id: noteId,
@@ -139,7 +146,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 					name: result.name,
 					userId: user.uid,
 					sharedWith: [],
-					studyDataId
+					studyDataId,
 				};
 
 				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
@@ -148,9 +155,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				setCurrentFolderData({ ...currentFolderData, notes: [...currentFolderData.notes, note] });
 			};
 
-			await noteAPI.uploadImage({
+			await noteAPI.uploadNote({
 				url: result.uri,
 				id: noteId,
+				userId: user.uid,
+				currentNumberOfNotes,
 				onUploaded: onUploaded,
 				onError: () => Toast.show({ title: "Error", description: "Error uploading image. Please try again.", type: "error" }),
 			});

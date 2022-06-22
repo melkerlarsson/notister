@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { DocumentReference, updateDoc, doc, setDoc, deleteDoc, } from "firebase/firestore";
+import { DocumentReference, updateDoc, doc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { collections, db, notesStorageRef } from "./config";
 import { ApiResponse } from "./types";
@@ -12,6 +12,25 @@ const convertImageToBlob = async (url: string): Promise<Blob> => {
 	const response: AxiosResponse<Blob> = await axios.request(config);
 
 	return response.data;
+};
+
+type UpdateNumberOfNotesProps = { 
+	userId: string;
+	currentNumberOfNotes: number;
+	delta: "increment" | "decrement";
+};
+
+const updateNumberOfNotes = async ({ userId, currentNumberOfNotes, delta }: UpdateNumberOfNotesProps) => {
+	await updateDoc(doc(collections.userData, userId), { numberOfNotes: currentNumberOfNotes + (delta === "increment" ? 1 : -1) });
+};
+
+export const getNumberOfNotes = async (userId: string) => {
+	const userData = (await getDoc(doc(collections.userData, userId))).data();
+	if (userData === undefined) {
+		return 0; 
+	}
+
+	return userData.numberOfNotes;
 };
 
 type SaveReviewProps = {
@@ -58,17 +77,18 @@ export const initializeStudyData = async ({ imageUrl, userId }: InitializeStudyD
 
 	await setDoc(doc(db, `studyData/${userId}/normal/${id}`), studyData);
 	return id;
-
 };
 
-type UploadImageProps = {
+type UploadNoteProps = {
 	url: string;
 	id: string;
+	userId: string;
+	currentNumberOfNotes: number;
 	onUploaded: (remoteUrl: string) => void;
 	onProgressChanged?: (progress: number) => void;
 	onError: (message: string) => void;
 };
-export const uploadImage = async ({ url, id, onUploaded, onProgressChanged, onError }: UploadImageProps): Promise<void> => {
+export const uploadNote = async ({ url, id, userId, onUploaded, currentNumberOfNotes, onProgressChanged, onError }: UploadNoteProps): Promise<void> => {
 	const blob = await convertImageToBlob(url);
 
 	const imageRef = notesStorageRef(id);
@@ -87,6 +107,7 @@ export const uploadImage = async ({ url, id, onUploaded, onProgressChanged, onEr
 		() => {
 			const getUrl = async () => {
 				const remoteUrl = await getDownloadURL(uploadTask.snapshot.ref);
+				await updateNumberOfNotes({userId, currentNumberOfNotes, delta: "increment"} );
 				onUploaded(remoteUrl);
 			};
 
@@ -104,13 +125,14 @@ type DelteNoteProps = {
 };
 
 export const deleteNoteAndRemoveFromFolder = async ({ userId, id, studyDataId, parentFolderRef, notes }: DelteNoteProps): Promise<ApiResponse<Note[]>> => {
-
 	try {
 		await deleteNote(id);
 		await deleteNoteReviewData(userId, studyDataId);
 
 		const newNotes = notes.filter((note) => note.id !== id);
 		await updateDoc(parentFolderRef, { notes: newNotes });
+
+		await updateNumberOfNotes({ userId, currentNumberOfNotes: await getNumberOfNotes(userId), delta: "decrement"});
 
 		return { data: newNotes, error: null };
 	} catch (error) {

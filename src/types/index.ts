@@ -1,58 +1,57 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 type RootFolder = {
-  id: string;
-  subFolders: SubFolder[];
-  notes: Note[];
-  userId: string;
+	id: string;
+	subFolders: SubFolder[];
+	notes: Note[];
+	userId: string;
 };
 
 type Folder = {
-  id: string;
-  name: string;
-  color: string;
-  subFolders: SubFolder[];
-  notes: Note[];
-  userId: string;
-  sharedWith: SharedUser[];
+	id: string;
+	name: string;
+	color: string;
+	subFolders: SubFolder[];
+	notes: Note[];
+	userId: string;
+	sharedWith: SharedUser[];
 };
 
 type SubFolder = {
-  color: string;
-  name: string;
-  id: string;
-  sharedWith: SharedUser[];
+	color: string;
+	name: string;
+	id: string;
+	sharedWith: SharedUser[];
 };
 
 type NewFolder = {
-  name: string;
+	name: string;
 };
 
 type Note = {
-  id: string;
-  imageUrl: string;
-  userId: string;
-  sharedWith: SharedUser[];
-  name: string;
-  studyDataId: string;
+	id: string;
+	imageUrl: string;
+	userId: string;
+	sharedWith: SharedUser[];
+	name: string;
+	studyDataId: string;
 };
 
 type SharedUser = {
-  id: string;
-  name: string;
+	id: string;
+	name: string;
 };
 
 type UserData = {
-  studyData: StudyData[];
-}
-
-type StudyData = {
-  id: string;
-  imageUrl: string;
-  reviewDate: Date;
-  lastReivewInterval: number;
-  reviewDates: Date[];
+	numberOfNotes: number;
 };
 
+type StudyData = {
+	id: string;
+	imageUrl: string;
+	reviewDate: Date;
+	lastReivewInterval: number;
+	reviewDates: Date[];
+};
 
 type Only<T, U> = {
 	[P in keyof T]: T[P];
