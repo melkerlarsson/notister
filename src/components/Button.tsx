@@ -8,11 +8,12 @@ interface ButtonProps {
 	onPress: () => void;
 	inverted?: boolean;
 	children?: string | React.ReactElement;
+	disabled?: boolean;
 }
 
-const Button = ({ title, style, textStyle, onPress, inverted, children }: ButtonProps) => {
+const Button = ({ title, style, textStyle, onPress, inverted, children, disabled }: ButtonProps) => {
 	return (
-		<TouchableOpacity onPress={onPress} style={[styles.button, { backgroundColor: inverted ? "#fff" : COLORS.primary }, style]} activeOpacity={0.8}>
+		<TouchableOpacity onPress={onPress} disabled={disabled} style={[styles.button, { backgroundColor: inverted ? "#fff" : COLORS.primary }, style]} activeOpacity={0.8}>
 			{children ? (
 				typeof children === "string" ? (
 					<Text style={[styles.text, { color: inverted ? COLORS.primary : "#fff" }, textStyle]}>{children}</Text>
