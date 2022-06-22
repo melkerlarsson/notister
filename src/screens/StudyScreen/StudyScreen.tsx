@@ -20,27 +20,32 @@ const StudyScreen = ({}: StudyScreenProps) => {
 	const { loading, data, error, reload, setData } = useData<StudyData[] | null>({
 		loadData: async () => {
 			if (!user) return null;
-			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
+			//const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
+			const documents = await getDocs(query(collections.studyData(user.uid)));
+
 			return documents.docs.map((d) => d.data());
 		},
 	});
 
-	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string) => {
+	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string): Promise<StudyData> => {
 		const res = await noteAPI.saveReview({ studyData, difficulty, userId });
 
 		if (res.error) {
 			Toast.show({ title: res.error.title, description: res.error.description, type: "error" });
+			return studyData;
+		} else {
+			return res.data;
 		}
+
 	};
 
 	const onButtonPress = async (difficulty: ReviewDifficulty) => {
 		if (data === null || user === null || data.length === 0) return;
-		await saveReview(data[0], difficulty, user.uid);
+		const newStudyData = await saveReview(data[0], difficulty, user.uid);
 
-		const firstElement = data[0];
 
 		if (difficulty === ReviewDifficulty.Impossible) {
-			data.push(firstElement);
+			data.push(newStudyData);
 		}
 
 		setData(data.splice(1, data.length));

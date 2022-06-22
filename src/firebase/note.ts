@@ -39,7 +39,7 @@ type SaveReviewProps = {
 	difficulty: ReviewDifficulty;
 };
 
-export const saveReview = async ({ studyData, userId, difficulty }: SaveReviewProps): Promise<ApiResponse<null>> => {
+export const saveReview = async ({ studyData, userId, difficulty }: SaveReviewProps): Promise<ApiResponse<StudyData>> => {
 	const reviewDate = new Date(Date.now());
 	const newInterval = calculateNewReviewInterval(studyData.lastReivewInterval, difficulty);
 
@@ -54,7 +54,7 @@ export const saveReview = async ({ studyData, userId, difficulty }: SaveReviewPr
 
 	try {
 		await updateDoc(doc(collections.studyData(userId), studyData.id), newStudyData);
-		return { error: null, data: null };
+		return { error: null, data: newStudyData };
 	} catch (error) {
 		return { error: { title: "Error", description: "Error saving review. Please try again." }, data: null };
 	}
