@@ -20,8 +20,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 	const { loading, data, error, reload, setData } = useData<StudyData[] | null>({
 		loadData: async () => {
 			if (!user) return null;
-			//const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
-			const documents = await getDocs(query(collections.studyData(user.uid)));
+			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
 
 			return documents.docs.map((d) => d.data());
 		},
