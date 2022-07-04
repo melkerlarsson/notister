@@ -1,6 +1,6 @@
 import { doc, getDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, RefreshControl } from "react-native";
+import { View, RefreshControl } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import Folder from "./components/Folder";
 import { collections } from "../../firebase/config";
