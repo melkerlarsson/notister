@@ -266,14 +266,4 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	);
 };
 
-const styles = StyleSheet.create({
-	container: {
-		display: "flex",
-		flex: 1,
-		flexDirection: "row",
-		flexWrap: "wrap",
-		backgroundColor: "#fff",
-	},
-});
-
 export default NotesScreen;
