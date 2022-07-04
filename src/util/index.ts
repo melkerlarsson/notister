@@ -23,3 +23,7 @@ export const calculateNewReviewInterval = (lastInterval: number, difficulty: Rev
 			return lastInterval + 14;
 	}
 };
+
+export const isFolderItemNote = (item: Note | SubFolder): item is Note => {
+	return (<Note>item).imageUrl !== undefined;
+};
