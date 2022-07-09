@@ -8,7 +8,7 @@ interface NoteProps extends FolderItemBaseProps {
 const Note = ({ imageUrl, ...props }: NoteProps) => {
 	return (
 		<FolderItem {...props}>
-			<Image source={{ uri: imageUrl }} style={styles.image} />
+			<Image source={{ uri: imageUrl }} style={styles.image}/>
 		</FolderItem>
 	);
 };

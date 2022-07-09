@@ -1,4 +1,4 @@
-import { StyleSheet, Text, useWindowDimensions } from "react-native";
+import { StyleSheet, Text, } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 export interface FolderItemBaseProps {
 	name: string;
@@ -13,11 +13,9 @@ interface FolderItemProps extends FolderItemBaseProps {
 }
 
 const FolderItem = ({ name, onPress, onLongPress, children }: FolderItemProps) => {
-	const { width } = useWindowDimensions();
-	const size = width / 2;
 
 	return (
-		<TouchableOpacity style={[styles.container, { width: size, height: size }]} delayLongPress={200} onPress={onPress} onLongPress={onLongPress} activeOpacity={0.6}>
+		<TouchableOpacity style={styles.container} delayLongPress={200} onPress={onPress} onLongPress={onLongPress} activeOpacity={0.6}>
 			{children}
 			<Text style={styles.name}>{name}</Text>
 
@@ -35,6 +33,7 @@ const styles = StyleSheet.create({
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
+		paddingBottom: 50,
 	},
 	name: {},
 });

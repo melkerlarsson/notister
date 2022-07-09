@@ -1,6 +1,7 @@
 import { doc, getDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
+import { View, RefreshControl } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import Folder from "./components/Folder";
 import { collections } from "../../firebase/config";
 import { NotesScreenNavigationProps } from "../../navigation/NotesStack";
@@ -21,6 +22,7 @@ import { folderAPI, noteAPI } from "../../firebase";
 import Toast from "../../components/Toast";
 import NoteSettings from "./components/SettingsBottomSheet/NoteSettings";
 import { MAX_NUMBER_OF_NOTES } from "../../constants";
+import { isFolderItemNote } from "../../util";
 
 type NotesScreenProps = NotesScreenNavigationProps;
 
@@ -122,12 +124,11 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 	const onAddNote = async () => {
 		if (!user || !currentFolderData || !currentFolderRef) return;
 
-
 		try {
 			const currentNumberOfNotes = await noteAPI.getNumberOfNotes(user.uid);
-			
+
 			if (currentNumberOfNotes >= MAX_NUMBER_OF_NOTES) {
-				Toast.show({ title: "Could not add note", description: `You already have reached the maximum number of notes (${MAX_NUMBER_OF_NOTES})`, type: "error" , duration: 2000});
+				Toast.show({ title: "Could not add note", description: `You already have reached the maximum number of notes (${MAX_NUMBER_OF_NOTES})`, type: "error", duration: 2000 });
 				return;
 			}
 
@@ -209,29 +210,26 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		setIsImageModalVisible(true);
 	};
 
-	const FolderItems = () => {
-		if (!currentFolderData) return null;
-
-		return (
-			<>
-				{currentFolderData.subFolders?.map((folder, index) => (
-					<Folder key={index} color={folder.color} name={folder.name} onPress={() => onFolderPress(folder.id, folder.name)} onLongPress={() => onFolderLongPress(folder)} />
-				))}
-				{currentFolderData &&
-					currentFolderData.notes?.map((note, index) => (
-						<Note key={index} imageUrl={note.imageUrl} name={note.name} onPress={() => showImageViewer(index)} onLongPress={() => onNoteLongPress(note)} />
-					))}
-			</>
-		);
+	const renderFolderItem = (item: SubFolder | Note, index: number) => {
+		if (isFolderItemNote(item)) {
+			const indexOffset = currentFolderData ? currentFolderData.subFolders.length : 0;
+			return <Note imageUrl={item.imageUrl} name={item.name} onPress={() => showImageViewer(index - indexOffset)} onLongPress={() => onNoteLongPress(item)} />;
+		} else {
+			return <Folder color={item.color} name={item.name} onPress={() => onFolderPress(item.id, item.name)} onLongPress={() => onFolderLongPress(item)} />;
+		}
 	};
 
 	return (
 		<View style={{ flex: 1 }}>
-			<ScrollView refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}>
-				<View style={styles.container}>
-					<FolderItems />
-				</View>
-			</ScrollView>
+			<FlatList
+				refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}
+				numColumns={2}
+				columnWrapperStyle={{ justifyContent: "space-between", paddingTop: 0 }}
+				contentContainerStyle={{ paddingHorizontal: 40 , paddingTop: 20}}
+				data={currentFolderData ? [...currentFolderData.subFolders, ...currentFolderData.notes] : null}
+				keyExtractor={(item) => item.id}
+				renderItem={({ item, index }) => renderFolderItem(item, index)}
+			></FlatList>
 			<NewFolderModal isVisible={isNewFolderModalVisible} onClose={() => setIsNewFolderModalVisible(false)} onAdd={onAddFolder} />
 			<FloatingAction
 				actions={actions}
@@ -266,15 +264,5 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 		</View>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		display: "flex",
-		flex: 1,
-		flexDirection: "row",
-		flexWrap: "wrap",
-		backgroundColor: "#fff",
-	},
-});
 
 export default NotesScreen;
