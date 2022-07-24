@@ -14,6 +14,7 @@ type TabParamBase = {
 export const Tab = createBottomTabNavigator<TabParamBase>();
 
 export type NotesTabScreenProps = BottomTabScreenProps<TabParamBase, "NotesTab">;
+export type StudyTabScreenProps = BottomTabScreenProps<TabParamBase, "Study">;
 
 export const TAB_BAR_HEIGHT = 70;
 

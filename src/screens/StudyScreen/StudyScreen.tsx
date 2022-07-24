@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Image, ActivityIndicator } from "react-native";
 import ReactNativeZoomableView from "@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView";
 import useData from "../../hooks/useData";
-
+import { Ionicons } from "@expo/vector-icons";
 import { ReviewButtons } from "./components";
 import { getDocs, query, where } from "firebase/firestore";
 import { collections } from "../../firebase/config";
@@ -12,20 +12,27 @@ import { ReviewDifficulty } from "../../types/review";
 import { Toast } from "../../components";
 import { calculateNewReviewInterval } from "../../util";
 import { COLORS } from "../../theme/colors";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
+import { StudyTabScreenProps } from "../../navigation/HomeStack";
 
-interface StudyScreenProps {}
+type StudyScreenProps = StudyTabScreenProps;
 
-const StudyScreen = ({}: StudyScreenProps) => {
+const StudyScreen = ({ navigation }: StudyScreenProps) => {
 	const user = useSelector((state: RootState) => state.userReducer.user);
 	const [savingReview, setSavingReview] = useState(false);
 	const { loading, data, error, reload, setData } = useData<StudyData[] | null>({
 		loadData: async () => {
 			if (!user) return null;
-			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now())) ));
+			const documents = await getDocs(query(collections.studyData(user.uid), where("reviewDate", "<=", new Date(Date.now()))));
 			return documents.docs.map((d) => d.data());
 		},
 	});
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: () => <Ionicons name="reload" onPress={reload} color={"#000"} size={24} />,
+		});
+	}, [navigation]);
 
 	const saveReview = async (studyData: StudyData, difficulty: ReviewDifficulty, userId: string): Promise<StudyData> => {
 		const res = await noteAPI.saveReview({ studyData, difficulty, userId });
@@ -36,7 +43,6 @@ const StudyScreen = ({}: StudyScreenProps) => {
 		} else {
 			return res.data;
 		}
-
 	};
 
 	const onButtonPress = async (difficulty: ReviewDifficulty) => {
@@ -44,7 +50,6 @@ const StudyScreen = ({}: StudyScreenProps) => {
 
 		setSavingReview(true);
 		const newStudyData = await saveReview(data[0], difficulty, user.uid);
-
 
 		if (difficulty === ReviewDifficulty.Impossible) {
 			data.push(newStudyData);
@@ -94,7 +99,7 @@ const StudyScreen = ({}: StudyScreenProps) => {
 							}}
 						/>
 					</View>
-					{ savingReview && <ActivityIndicator size="large" style={{ position: "absolute", alignSelf: "center", top: "40%"}} color={"#000"}/> }
+					{savingReview && <ActivityIndicator size="large" style={{ position: "absolute", alignSelf: "center", top: "40%" }} color={"#000"} />}
 				</View>
 			</View>
 		);
