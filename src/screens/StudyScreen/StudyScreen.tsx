@@ -30,7 +30,7 @@ const StudyScreen = ({ navigation }: StudyScreenProps) => {
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => <Ionicons name="reload" onPress={reload} color={"#000"} size={24} />,
+			headerRight: () => <View style={{ marginRight: 10}}><Ionicons name="reload" onPress={reload} color={"#000"} size={24} /></View>,
 		});
 	}, [navigation]);
 
