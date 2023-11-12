@@ -4,6 +4,7 @@ import { SettingsScreen, StudyScreen } from "../screens";
 import { Ionicons } from "@expo/vector-icons";
 import NotesStack from "./NotesStack";
 import { COLORS, HEADER_BACKGROUND_COLOR } from "../theme/colors";
+import React from "react";
 
 type TabParamBase = {
 	Settings: undefined;
@@ -16,7 +17,7 @@ export const Tab = createBottomTabNavigator<TabParamBase>();
 export type NotesTabScreenProps = BottomTabScreenProps<TabParamBase, "NotesTab">;
 export type StudyTabScreenProps = BottomTabScreenProps<TabParamBase, "Study">;
 
-export const TAB_BAR_HEIGHT = 70;
+export const TAB_BAR_HEIGHT = 75;
 
 const HomeStack = () => {
 	const screenOptions = (route: RouteProp<TabParamBase, keyof TabParamBase>): BottomTabNavigationOptions => {
@@ -26,7 +27,7 @@ const HomeStack = () => {
 				height: TAB_BAR_HEIGHT,
 				justifyContent: "center",
 				alignItems: "center",
-				paddingBottom: 10,
+				paddingBottom: 20,
 				backgroundColor: "#ffffff",
 			},
 			tabBarActiveTintColor: COLORS.primary,

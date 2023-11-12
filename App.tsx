@@ -4,10 +4,13 @@ import { PortalProvider } from "@gorhom/portal";
 import { ToastProvider } from "./src/components/Toast";
 import { StatusBar } from "expo-status-bar";
 
+import "react-native-get-random-values";
+
 import { Provider } from "react-redux";
 import store from "./src/redux/store";
 
 import Routes from "./src/navigation/Routes";
+import React from "react";
 
 LogBox.ignoreLogs(["Setting a timer for a long period"]);
 

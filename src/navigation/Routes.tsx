@@ -8,6 +8,7 @@ import { setUser, UserAction } from "../redux/user/userActions";
 import { SplashScreen } from "../screens";
 import AuthStack from "./AuthStack";
 import HomeStack from "./HomeStack";
+import React from "react";
 
 interface RoutesProps {}
 

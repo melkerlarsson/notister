@@ -16,6 +16,7 @@ import { v4 as createUuid } from "uuid";
 import FolderSettings from "./components/SettingsBottomSheet/FolderSettings";
 
 import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
 import Note from "./components/Note";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
 import { folderAPI, noteAPI } from "../../firebase";
@@ -93,6 +94,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				const subFolder: SubFolder = await folderAPI.addFolder({ newFolder, userId: user.uid, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 				setCurrentFolderData({ ...currentFolderData, subFolders: [...currentFolderData.subFolders, subFolder] });
 			} catch (error) {
+				console.log(error)
 				Toast.show({ title: "Error", description: "An error occurred while adding folder. Please try again", type: "error" });
 			}
 		}
@@ -132,10 +134,16 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				return;
 			}
 
-			const result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
+			 const result = await ImagePicker.launchImageLibraryAsync({
+					mediaTypes: ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					allowsMultipleSelection: false,
+				});
 
-			if (result.type === "cancel") return;
+			if (result.canceled) return;
 
+			const image = result.assets[0];
+			
 			const noteId = createUuid();
 
 			const onUploaded = async (imageUrl: string) => {
@@ -144,7 +152,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				const note: Note = {
 					id: noteId,
 					imageUrl: imageUrl,
-					name: result.name,
+					name: image.fileName || "",
 					userId: user.uid,
 					sharedWith: [],
 					studyDataId,
@@ -157,7 +165,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 			};
 
 			await noteAPI.uploadNote({
-				url: result.uri,
+				url: image.uri,
 				id: noteId,
 				userId: user.uid,
 				currentNumberOfNotes,
@@ -165,6 +173,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				onError: () => Toast.show({ title: "Error", description: "Error uploading image. Please try again.", type: "error" }),
 			});
 		} catch (error) {
+			console.error(error);
 			Toast.show({ title: "Error", description: "Error adding note. Please try again.", type: "error" });
 		}
 	};
