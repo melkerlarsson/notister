@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { View, StyleSheet, TextInput as InputField, TextInputProps as InputFieldProps } from "react-native";
+import { StyleSheet, TextInput as InputField, TextInputProps as InputFieldProps } from "react-native";
 import { COLORS } from "../theme/colors";
+import React from "react";
 
 type TextInputProps = InputFieldProps;
 

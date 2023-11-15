@@ -1,8 +1,9 @@
+import React from "react";
 import { View, Text, StyleSheet, TextInput, TextInputProps } from "react-native";
-import { Control, Controller, Path } from "react-hook-form";
+import { Control, Controller, Path, FieldValues } from "react-hook-form";
 import { COLORS } from "../theme/colors";
 
-interface CustomInputProps<T> extends TextInputProps {
+interface CustomInputProps<T extends FieldValues> extends TextInputProps {
 	name: Path<T>;
 	control: Control<T>;
 	placeholder: string;
@@ -19,14 +20,7 @@ function CustomInput<T extends { [key: string]: string }>({ name, label, control
 					<Text style={styles.label}>{label}</Text>
 
 					<View>
-						<TextInput
-							value={value}
-							onChangeText={onChange}
-							onBlur={onBlur}
-							placeholder={placeholder}
-							{...props}
-							style={[styles.input, { borderColor: error ? COLORS.error : COLORS.primary }]}
-						/>
+						<TextInput value={value} onChangeText={onChange} onBlur={onBlur} placeholder={placeholder} {...props} style={[styles.input, { borderColor: error ? COLORS.error : COLORS.primary }]} />
 					</View>
 
 					{error && <Text style={{ color: COLORS.error, alignSelf: "flex-start" }}>{error.message || "Error"}</Text>}
