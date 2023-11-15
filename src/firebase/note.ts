@@ -24,13 +24,13 @@ const updateNumberOfNotes = async ({ userId, currentNumberOfNotes, delta }: Upda
 	await updateDoc(doc(collections.userData, userId), { numberOfNotes: currentNumberOfNotes + (delta === "increment" ? 1 : -1) });
 };
 
-export const getNumberOfNotes = async (userId: string) => {
+export const getNumberOfNotes = async (userId: string): Promise<number> => {
 	const userData = (await getDoc(doc(collections.userData, userId))).data();
 	if (userData === undefined) {
 		return 0; 
 	}
 
-	return userData.numberOfNotes;
+	return userData.numberOfNotes as number;
 };
 
 type SaveReviewProps = {
