@@ -15,7 +15,6 @@ import { RootState } from "../../redux/rootReducer";
 import { v4 as createUuid } from "uuid";
 import FolderSettings from "./components/SettingsBottomSheet/FolderSettings";
 
-import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import Note from "./components/Note";
 import ImageViewer from "./components/ImageViewer/ImageViewer";
@@ -94,7 +93,6 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				const subFolder: SubFolder = await folderAPI.addFolder({ newFolder, userId: user.uid, parentFolderRef: currentFolderRef, parentSubFolders: currentFolderData.subFolders });
 				setCurrentFolderData({ ...currentFolderData, subFolders: [...currentFolderData.subFolders, subFolder] });
 			} catch (error) {
-				console.log(error)
 				Toast.show({ title: "Error", description: "An error occurred while adding folder. Please try again", type: "error" });
 			}
 		}
@@ -134,16 +132,16 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				return;
 			}
 
-			 const result = await ImagePicker.launchImageLibraryAsync({
-					mediaTypes: ImagePicker.MediaTypeOptions.Images,
-					allowsEditing: true,
-					allowsMultipleSelection: false,
-				});
+			const result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.Images,
+				allowsEditing: true,
+				allowsMultipleSelection: false,
+			});
 
 			if (result.canceled) return;
 
 			const image = result.assets[0];
-			
+
 			const noteId = createUuid();
 
 			const onUploaded = async (imageUrl: string) => {
@@ -234,7 +232,7 @@ const NotesScreen = ({ navigation, route }: NotesScreenProps) => {
 				refreshControl={<RefreshControl enabled={true} onRefresh={fetchItems} refreshing={loading} />}
 				numColumns={2}
 				columnWrapperStyle={{ justifyContent: "space-between", paddingTop: 0 }}
-				contentContainerStyle={{ paddingHorizontal: 40 , paddingTop: 20}}
+				contentContainerStyle={{ paddingHorizontal: 40, paddingTop: 20 }}
 				data={currentFolderData ? [...currentFolderData.subFolders, ...currentFolderData.notes] : null}
 				keyExtractor={(item) => item.id}
 				renderItem={({ item, index }) => renderFolderItem(item, index)}
