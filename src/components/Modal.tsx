@@ -106,12 +106,8 @@ const Modal = ({
 					{errorMessage ? <Text>{errorMessage}</Text> : null}
 
 					<View style={styles.buttons}>
-						<TextButton onPress={onClose}>
-							{buttons.cancel.text}
-						</TextButton>
-						<TextButton onPress={onConfirmButtonPressed}>
-							{loading && withLoadingIndicator ? <ActivityIndicator size="small" color={COLORS.primary} /> : buttons.confirm.text}
-						</TextButton>
+						<TextButton onPress={onClose}>{buttons.cancel.text}</TextButton>
+						<TextButton onPress={onConfirmButtonPressed}>{loading && withLoadingIndicator ? <ActivityIndicator size="small" color={COLORS.primary} /> : buttons.confirm.text}</TextButton>
 					</View>
 				</View>
 			</GestureHandlerRootView>
